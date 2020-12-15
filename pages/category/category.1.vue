@@ -137,7 +137,7 @@
 		},
 		onShareAppMessage(res) { 
 			return {
-				title: '商城',
+				title: '吾仓集市',
 			}
 		},
 		onPullDownRefresh() {
