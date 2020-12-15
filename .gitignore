@@ -1,4 +1,9 @@
-/node_modules/*
-/unpackage/*
-!/unpackage/res/*
-/.idea/*
+/unpackage
+package-lock.json
+
+*.log
+ 
+.travis.yml
+LICENSE.txt
+composer.json
+composer.lock

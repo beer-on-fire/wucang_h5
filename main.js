@@ -1,44 +1,51 @@
 import Vue from 'vue'
-import App from './App'
-import store from '@/common/store'
-import cuCustom from '@/static/colorui/components/cu-custom.vue'
-import router from '@/common/router'
-import tools from '@/common/utils/tools'
-import '@/common/utils/sdk/sdk-h5.js'
-import {
-	API_URL
-} from './env.js'
+import App from './App' 
+import http from './common/axios.js'
+import {Api_url} from './common/config'
+import Switch from 'common/switch.js' 
+import * as filters from 'common/filters/filters.js'
+App.mpType = 'app'   
 
+     
+const msg = (title, duration=1500, mask=false, icon='none')=>{
+	//统一提示方便全局修改
+	if(Boolean(title) === false){
+		return;
+	}
+	uni.showToast({
+		title,
+		duration,
+		mask, 
+		icon
+	});
+}
+const prePage = ()=>{
+	let pages = getCurrentPages();
+	let prePage = pages[pages.length - 2];
+	// #ifdef H5
+	return prePage;
+	// #endif
+	return prePage.$vm;
+}
+Vue.prototype.$api = {msg,http,prePage};
+Vue.prototype.$getimg = Api_url	
+Vue.prototype.shop_name = "商城" 
+ 
+Vue.prototype.version = "shops2"  //首页,个人中心
 
-import shoproShare from '@/common/mixins/shopro-share'
-Vue.mixin(shoproShare);
+//过滤器集合
+Object.keys(filters).forEach(key =>{
+	Vue.filter(key,filters[key])
+})
+ 
+Vue.prototype.promise_switch = Switch.set_storage() 
+ 
 
-import {
-	RouterMount
-} from 'uni-simple-router'
-import api from '@/common/request/index'
+App.mpType = 'app'
 
-Vue.prototype.$store = store;
-Vue.prototype.$api = api;
-Vue.prototype.$tools = tools;
-Vue.prototype.$API_URL = API_URL;
-
-Vue.component('cu-custom', cuCustom);
-Vue.config.productionTip = false;
-App.mpType = 'app';
 const app = new Vue({
-	store,
-	...App
-});
+    ...App
+})
+app.$mount()
 
 
-// #ifdef H5
-import wxsdk from '@/common/wechat/sdk'
-
-Vue.prototype.$wxsdk = wxsdk;
-RouterMount(app, '#app');
-// #endif
-
-// #ifndef H5
-app.$mount();
-// #endif

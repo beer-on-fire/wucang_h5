@@ -1,323 +1,245 @@
 <template>
 	<view class="container">
-		<!-- 背景图 -->
-		<view class="x-c"><image class="logo-bg" src="http://shopro.7wpp.com/imgs/logo_bg.png" mode=""></image></view>
-		<!-- titleview -->
-		<view class="head-box"><cu-custom :isBack="true"></cu-custom></view>
+		<view class="left-bottom-sign"></view>
+		<view class="back-btn yticon icon-zuojiantou-up" @click="navBack"></view>
+		<view class="right-top-sign"></view>
+		<!-- 设置白色背景防止软键盘把下部绝对定位元素顶上来盖住输入框等 -->
 		<view class="wrapper">
-			<!-- logo -->
-			<view class="x-c"><image class="logo" :src="sysInfo.logo" mode="widthFix"></image></view>
-			<!-- 登录tab -->
-			<view class="tab-box x-f">
-				<view class="tab-item x-c" @tap="onLoginWay(0)">
-					<text class="tab-title">手机登录</text>
-					<view class="line-box" v-show="loginWay === 0"><text class="triangle"></text></view>
-				</view>
-				<view class="tab-item x-c" @tap="onLoginWay(1)">
-					<text class="tab-title">密码登录</text>
-					<view class="line-box" password v-show="loginWay === 1"><text class="triangle"></text></view>
-				</view>
+			<view class="left-top-sign">LOGIN</view>
+			<view class="welcome">
+				欢迎回来！
 			</view>
-			<!-- 表单 -->
-			<view class="login-box y-f" v-show="loginWay === 0">
-				<view class="input-item x-c"><input class="inp" v-model="userPhone" type="number" placeholder="请输入手机号" placeholder-class="pl" /></view>
-				<view class="input-item x-c">
-					<input class="inp" v-model="code.value" type="number" placeholder="请输入验证码" placeholder-class="pl" />
-					<button class="cu-btn code-btn" :disabled="code.status" @tap="getCode">{{ code.text }}</button>
+			<view class="input-content">
+				<view class="input-item">
+					<text class="tit">手机号码</text>
+					<input 
+						type="number" 
+						:value="mobile" 
+						placeholder="请输入手机号码"
+						maxlength="11"
+						data-key="mobile"
+						@input="inputChange"
+					/>
 				</view>
-			</view>
-			<view class="login-box y-f" v-show="loginWay === 1">
-				<view class="input-item x-c"><input class="inp" v-model="userPhone" type="number" placeholder="请输入账号" placeholder-class="pl" /></view>
-				<view class="input-item x-c"><input class="inp" password v-model="userPassword" type="text" placeholder="请输入密码" placeholder-class="pl" /></view>
-			</view>
-			<!-- 登录按钮 -->
-			<view class="x-c y-f">
-				<button class="cu-btn login-btn mb30" @tap="toLogin">登录</button>
-				<view class="x-bc tip-box ">
-					<button class="cu-btn tip-btn" @tap="jump('/pages/public/register')">立即注册</button>
-					<view class="" v-show="loginWay === 1"><button class="cu-btn tip-btn" @tap="jump('/pages/public/forgot')">忘记密码</button></view>
+				<view class="input-item">
+					<text class="tit">密码</text>
+					<input 
+						type="mobile" 
+						value="" 
+						placeholder="8-18位不含特殊字符的数字、字母组合"
+						placeholder-class="input-empty"
+						maxlength="20"
+						password 
+						data-key="password"
+						@input="inputChange"
+						@confirm="toLogin"
+					/>
 				</view>
 			</view>
-			<view class="third-party y-f">
-				<!-- #ifdef H5 -->
-				<button class="cu-btn wx-logo-box y-f" @tap="wxLogin">
-					<image class="auto-login" src="http://shopro.7wpp.com/imgs/auto_login.png" mode=""></image>
-					<view class="">微信一键登录</view>
-				</button>
-				<!-- #endif -->
-				<!-- #ifdef MP-WEIXIN -->
-				<button class="cu-btn wx-logo-box y-f" open-type="getUserInfo" @getuserinfo="getuserinfo">
-					<image class="auto-login" src="http://shopro.7wpp.com/imgs/auto_login.png" mode=""></image>
-					<view class="">微信一键登录</view>
-				</button>
-				<!-- #endif -->
-				<!-- #ifdef APP-PLUS -->
-				<button class="cu-btn wx-logo-box y-f" @tap="wxLogin">
-					<image class="auto-login" src="http://shopro.7wpp.com/imgs/auto_login.png" mode=""></image>
-					<view class="">微信一键登录</view>
-				</button>
-				<!-- #endif -->
+			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
+			<view class="forget-section">
+				忘记密码?
 			</view>
+		</view>
+		<view class="register-section">
+			还没有账号?
+			<text @click="toRegist">马上注册</text>
 		</view>
 	</view>
 </template>
 
 <script>
-import Wechat from '@/common/wechat/wechat';
-import { mapMutations, mapActions, mapState } from 'vuex';
-import store from '@/common/store';
-export default {
-	data() {
-		return {
-			code: {
-				text: '获取验证码',
-				status: false,
-				value: ''
+	import {  
+        mapMutations  
+    } from 'vuex';
+	
+	export default{
+		data(){
+			return {
+				mobile: '',
+				password: '',
+				logining: false
+			}
+		},
+		onLoad(){
+			
+		},
+		methods: {
+			...mapMutations(['login']),
+			inputChange(e){
+				const key = e.currentTarget.dataset.key;
+				this[key] = e.detail.value;
 			},
-			loginWay: 0,
-			userPhone: '',
-			userPassword: '',
-			sysInfo: uni.getStorageSync('sysInfo')
-		};
-	},
-	computed: {
-		...mapState({
-			initData: state => state.init.initData
-		})
-	},
-	onLoad() {
-		if (this.$Route.query.token) {
-			this.setTokenAndBack(this.$Route.query.token);
-		}
-	},
-	onShow() {},
-	methods: {
-		...mapActions(['getUserInfo', 'setTokenAndBack']),
-		// #ifdef MP-WEIXIN
-		async getuserinfo(e) {
-			var wechat = new Wechat();
-			let token = await wechat.wxMiniProgramLogin(e);
-			store.commit('FORCE_OAUTH', false);
-			this.setTokenAndBack(token);
-		},
-		// #endif
-		async wxLogin() {
-			let wechat = new Wechat();
-			let token = await wechat.login();
-			if (token !== undefined) {
-				this.setTokenAndBack(token);
-			}
-		},
-		onLoginWay(flag) {
-			this.loginWay = flag;
-		},
-		toLogin() {
-			let that = this;
-			if (that.loginWay === 0) {
-				that.$api('user.mobileLogin', {
-					mobile: that.userPhone,
-					code: that.code.value
-				}).then(res => {
-					if (res.code === 1) {
-						that.setTokenAndBack(res.data.userinfo.token);
-					}
-				});
-			}
-			if (that.loginWay === 1) {
-				that.$api('user.accountLogin', {
-					account: that.userPhone,
-					password: that.userPassword
-				}).then(res => {
-					if (res.code === 1) {
-						that.setTokenAndBack(res.data.userinfo.token);
-					}
-				});
+			navBack(){
+				uni.navigateBack();
+			},
+			toRegist(){
+				this.$api.msg('去注册');
+			},
+			async toLogin(){
+				this.logining = true;
+				const {mobile, password} = this;
+				// //数据验证模块
+				// if(!this.$api.match({
+				// 	mobile,
+				// 	password
+				// })){
+				// 	this.logining = false;
+				// 	return;
+				// }
+				
+				const sendData = {
+					mobile,
+					password
+				};
+				const result = await this.$api.json('userInfo');
+				if(result.status === 1){
+					this.login(result.data);
+                    uni.navigateBack();  
+				}else{
+					this.$api.msg(result.msg);
+					this.logining = false;
+				}
 			}
 		},
 
-		// 获取短信
-		async getCode() {
-			let that = this;
-			that.code.status = true;
-			let countdown = 60;
-			that.$api('sms.send', {
-				mobile: that.userPhone,
-				event: 'mobilelogin'
-			}).then(res => {
-				if (res.code === 1) {
-					that.code.text = countdown + '秒';
-					that.code.status = true;
-					let timer = setInterval(() => {
-						if (countdown > 0) {
-							that.code.text = countdown - 1 + '秒';
-							countdown--;
-						} else {
-							clearInterval(timer);
-							that.code.text = '获取验证码';
-							that.code.status = false;
-						}
-					}, 1000);
-				} else {
-					that.code.status = false;
-				}
-			});
-		},
-		// 路由跳转
-		jump(path, parmas) {
-			this.$Router.push({
-				path: path,
-				query: parmas
-			});
-		}
 	}
-};
 </script>
 
-<style lang="scss">
-.container {
-	position: relative;
-	width: 100vw;
-	height: 100vh;
-	// overflow: hidden;
-	background: linear-gradient(180deg, rgba(239, 196, 128, 1) 0%, rgba(248, 220, 165, 1) 25%, rgba(255, 255, 255, 1) 98%);
-
-	// titleview
-	.head-box {
-		.cuIcon-back {
-			font-size: 50rpx !important;
-			font-weight: 500;
+<style lang='scss'>
+	page{
+		background: #fff;
+	}
+	.container{
+		padding-top: 115px;
+		position:relative;
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
+		background: #fff;
+	}
+	.wrapper{
+		position:relative;
+		z-index: 90;
+		background: #fff;
+		padding-bottom: 40upx;
+	}
+	.back-btn{
+		position:absolute;
+		left: 40upx;
+		z-index: 9999;
+		padding-top: var(--status-bar-height);
+		top: 40upx;
+		font-size: 40upx;
+		color: $font-color-dark;
+	}
+	.left-top-sign{
+		font-size: 120upx;
+		color: $page-color-base;
+		position:relative;
+		left: -16upx;
+	}
+	.right-top-sign{
+		position:absolute;
+		top: 80upx;
+		right: -30upx;
+		z-index: 95;
+		&:before, &:after{
+			display:block;
+			content:"";
+			width: 400upx;
+			height: 80upx;
+			background: #b4f3e2;
+		}
+		&:before{
+			transform: rotate(50deg);
+			border-radius: 0 50px 0 0;
+		}
+		&:after{
+			position: absolute;
+			right: -198upx;
+			top: 0;
+			transform: rotate(-50deg);
+			border-radius: 50px 0 0 0;
+			/* background: pink; */
 		}
 	}
-
-	// logo
-	.logo {
-		width: 410rpx;
-		height: 120rpx;
+	.left-bottom-sign{
+		position:absolute;
+		left: -270upx;
+		bottom: -320upx;
+		border: 100upx solid #d0d1fd;
+		border-radius: 50%;
+		padding: 180upx;
 	}
-
-	.logo-bg {
-		width: 640rpx;
-		height: 300rpx;
+	.welcome{
+		position:relative;
+		left: 50upx;
+		top: -90upx;
+		font-size: 46upx;
+		color: #555;
+		text-shadow: 1px 0px 1px rgba(0,0,0,.3);
 	}
-}
-
-.wrapper {
-	position: absolute;
-	z-index: 90;
-	padding-bottom: 40upx;
-	padding-top: 115px;
-	width: 100vw;
-	height: 100vh;
-	top: 0;
-
-	// 登录选项卡
-	.tab-box {
-		margin: 60rpx auto 30rpx;
-		width: 608rpx;
-
-		.tab-item {
-			flex: 1;
-			height: 80rpx;
-			position: relative;
-
-			.tab-title {
-				font-size: 32rpx;
-				font-weight: bold;
-				color: #845708;
-			}
-
-			.line-box {
-				position: absolute;
-				width: 300rpx;
-				height: 4rpx;
-				background: rgba(233, 181, 98, 1);
-				bottom: 0;
-				left: 50%;
-				transform: translateX(-50%);
-
-				.triangle {
-					position: absolute;
-					bottom: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					disply: block;
-					width: 0;
-					height: 0;
-					border-width: 10rpx;
-					border-style: solid;
-					border-color: transparent transparent #e9b562 transparent;
-				}
-			}
+	.input-content{
+		padding: 0 60upx;
+	}
+	.input-item{
+		display:flex;
+		flex-direction: column;
+		align-items:flex-start;
+		justify-content: center;
+		padding: 0 30upx;
+		background:$page-color-light;
+		height: 120upx;
+		border-radius: 4px;
+		margin-bottom: 50upx;
+		&:last-child{
+			margin-bottom: 0;
 		}
-	}
-
-	// 输入
-	.login-box {
-		.input-item {
-			height: 108rpx;
-			border-bottom: 1rpx solid rgba(#d0b17b, 0.3);
-			width: 608rpx;
-
-			.inp {
-				flex: 1;
-				height: 100%;
-				font-size: 28rpx;
-			}
-
-			.pl {
-				color: #c8963d;
-			}
-
-			.code-btn {
-				background: none;
-				font-size: 28rpx;
-				color: #845708;
-			}
+		.tit{
+			height: 50upx;
+			line-height: 56upx;
+			font-size: $font-sm+2upx;
+			color: $font-color-base;
 		}
+		input{
+			height: 60upx;
+			font-size: $font-base + 2upx;
+			color: $font-color-dark;
+			width: 100%;
+		}	
 	}
 
-	// 登录
-	.login-btn {
+	.confirm-btn{
 		width: 630upx;
-		height: 80upx;
-		border-radius: 40rpx;
+		height: 76upx;
+		line-height: 76upx;
+		border-radius: 50px;
 		margin-top: 70upx;
-		background: linear-gradient(90deg, rgba(233, 180, 97, 1), rgba(238, 204, 137, 1));
-		box-shadow: 0px 7rpx 6rpx 0px rgba(229, 138, 0, 0.22);
+		background: $uni-color-primary;
 		color: #fff;
-	}
-
-	.tip-box {
-		width: 630rpx;
-
-		.tip-btn {
-			font-size: 26rpx;
-			font-family: PingFang SC;
-			font-weight: 400;
-			text-decoration: underline;
-			color: rgba(200, 150, 61, 1);
-			background: none;
+		font-size: $font-lg;
+		&:after{
+			border-radius: 100px;
 		}
 	}
-
-	// 一键登录按钮
-	.wx-logo-box {
-		font-size: 26rpx;
-		font-family: PingFang SC;
-		font-weight: 400;
-		color: rgba(200, 150, 61, 1);
-		margin-top: 80rpx;
-		background: none;
-		display: block;
-		&:hover {
-			background: none;
-		}
-		.auto-login {
-			width: 80rpx;
-			height: 80rpx;
-			overflow: hidden;
-			margin-bottom: 10rpx;
+	.forget-section{
+		font-size: $font-sm+2upx;
+		color: $font-color-spec;
+		text-align: center;
+		margin-top: 40upx;
+	}
+	.register-section{
+		position:absolute;
+		left: 0;
+		bottom: 50upx;
+		width: 100%;
+		font-size: $font-sm+2upx;
+		color: $font-color-base;
+		text-align: center;
+		text{
+			color: $font-color-spec;
+			margin-left: 10upx;
 		}
 	}
-}
 </style>
