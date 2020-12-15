@@ -704,50 +704,52 @@ export default {
       let res = await Cache.get_pro_detail(index, this.xiala)
       console.log('商品详情：', res)
       this.list = res.data || res
-      if (res.data.video) {
+      if (this.list.video) {
         this.is_auto = false
       } else {
         this.is_auto = true
       }
 
       //限时折扣
-      if (!res.data || !res.data.discount || !res.data.discount.id) {
+      if (!this.list || !this.list.discount || !this.list.discount.id) {
         this.detail = false //detail变量表示是否为限时折扣，糟糕的变量名
       } else {
         this.set_discount() //设置限时折扣
       }
 
       //拼团相关
-      if (res.data.pt.price) {
+      if (this.list.pt.price) {
         this.is_pt = true
         // this.$api.http.get('pt/get_item', {
         // 	id: this.id
         // }).then(res => {
-        productModel.getPtItem(index).then(res => {
-          this.pindan = res.data
-          this.get_time(res.data)
+        productModel.getPtItem(index).then(ress => {
+          console.log('拼团相关：', ress)
+          this.pindan = ress.data
+          this.get_time(ress.data)
         })
-        if (res.data.pt.pt.is_new_user == 1) {
+
+        if (this.list.pt.pt.is_new_user == 1) {
           this.is_new_pt = true
         }
       }
 
       const re_style = new RegExp('style=""', 'gi')
-      res.data.content = res.data.content.replace(re_style, ``)
+      this.list.content = this.list.content.replace(re_style, ``)
       const regex = new RegExp('<img', 'gi')
-      this.content = res.data.content.replace(regex, `<img style="max-width: 100%; height: auto"`)
+      this.content = this.list.content.replace(regex, `<img style="max-width: 100%; height: auto"`)
       if (this.list.sku_arr) {
         this.sku_arr = this.list.sku_arr
         this.xz_sku_name = '请选择规格'
       }
-      if (res.data.sku.length > 0) {
-        res.data.sku_arr.initialSku = {}
-        res.data.sku_arr.initialSku['selectedNum'] = 1
-        for (let [k, v] of Object.entries(res.data.sku_arr.tree)) {
-          res.data.sku_arr.initialSku[v.k_s] = ''
+      if (this.list.sku.length > 0) {
+        this.list.sku_arr.initialSku = {}
+        this.list.sku_arr.initialSku['selectedNum'] = 1
+        for (let [k, v] of Object.entries(this.list.sku_arr.tree)) {
+          this.list.sku_arr.initialSku[v.k_s] = ''
         }
       }
-      this.get_pro_type(res.data)
+      this.get_pro_type(this.list)
     },
     //是否开启购物车功能
     check_switch () {
@@ -2315,7 +2317,7 @@ page {
 }
 
 .tui-cell-title {
-  width: 66upx;
+  width: 100upx;
   padding-right: 30upx;
   flex-shrink: 0;
 }

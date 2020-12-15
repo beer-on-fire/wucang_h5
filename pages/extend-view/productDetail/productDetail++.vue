@@ -2279,7 +2279,7 @@
 
 
 	.tui-cell-title {
-		width: 66upx;
+		width: 100upx;
 		padding-right: 30upx;
 		flex-shrink: 0;
 	}
