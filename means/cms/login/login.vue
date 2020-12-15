@@ -95,7 +95,7 @@
 					this.$api.msg('手机号或验证码错误')
 					return;
 				}
-				// uni.setStorageSync('token',res.token)
+				uni.setStorageSync('token',res.token)
 				uni.switchTab({
 					url:'/pages/index/index'
 				}) 

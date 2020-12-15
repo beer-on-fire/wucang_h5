@@ -88,64 +88,7 @@
     </view>
 
     <view class="tui-product-category">
-      <swiper :indicator-dots="category.length >8 ?true:false"
-        :interval="5000"
-        :duration="150"
-        class="tui-banner-swiper"
-        style='height:160px'
-        :circular="true"
-        indicator-color="#ccc"
-        indicator-active-color="rgba(251,88,106, 0.8)">
-        <swiper-item>
-          <view style="display: flex;flex-wrap: wrap;">
-            <view class="tui-category-item"
-              v-for="(item,index) in category"
-              :key="index"
-              :data-key="item.name"
-              v-if="index<8"
-              @click="jump(item.url,item.id,item.url_name,item)">
-              <!-- <navigator :url="item.url">
-								<image :src="getimg+item.img_id" class="tui-category-img" mode="scaleToFill"></image>
-								<view class="tui-category-name">{{item.nav_name}}</view>
-							</navigator> -->
 
-              <img :src="getimg+item.img_id"
-                class="tui-category-img"
-                mode="scaleToFill"></img>
-              <view class="tui-category-name">
-                {{item.nav_name}}</view>
-
-            </view>
-          </view>
-        </swiper-item>
-        <swiper-item v-if="category.length>8">
-          <view style="display: flex;flex-wrap: wrap;">
-            <view class="tui-category-item"
-              v-for="(item,index) in category"
-              :key="index"
-              :data-key="item.name"
-              v-if="index>7">
-              <!-- <navigator :url="item.url">
-								<block v-if="item.nav_name == '优惠券'" @click="check">
-									<image :src="getimg+item.img_id" class="tui-category-img" mode="scaleToFill"></image>
-									<view class="tui-category-name">{{item.nav_name}}</view>
-								</block>
-								<block v-else>
-									<image :src="getimg+item.img_id" class="tui-category-img" mode="scaleToFill"></image>
-									<view class="tui-category-name">{{item.nav_name}}</view>
-								</block>
-
-							</navigator> -->
-              <img :src="getimg+item.img_id"
-                @click="jump(item.url,item.id,item.url_name,item)"
-                class="tui-category-img"
-                mode="scaleToFill"></img>
-              <view class="tui-category-name"
-                @click="jump(item.url,item.id,item.url_name,item)">{{item.nav_name}}</view>
-            </view>
-          </view>
-        </swiper-item>
-      </swiper>
       <!-- <view class="tui-category-item" v-for="(item,index) in category" :key="index" :data-key="item.name"> 
 				<navigator :url="item.url">
 					<image :src="getimg+item.img_id" class="tui-category-img" mode="scaleToFill"></image>
@@ -415,13 +358,11 @@ export default {
       that.fx_switch = that.switch_list.fx_status == 0 ? false : true
     },
     jump (url, id, name, item) {
-      console.log(name)
       const that = this
       if (name == "优惠券") { //优惠券
         if (!Check.a()) {
           return
         }
-        console.log(url, id, name)
       }
       if (name == '分销商品') { //分销
         //判断分销开关是否开启
@@ -448,12 +389,9 @@ export default {
         })
       }
 
-      console.log(url)
       uni.navigateTo({
         url: url
       })
-
-      console.log('跳转')
 
     },
 
@@ -478,7 +416,6 @@ export default {
       }
     },
     _load () {
-      console.log('开始获取数据')
       this.$api.http.get('article/type_article?type=3').then(res => {
         if (res.data && res.data[0]) {
           this.gundong = res.data[0].title
@@ -486,9 +423,7 @@ export default {
       })
       this.$api.http.get('search/record').then(res => { //首页banner 
         this.resou = res.data
-        if (res.data == 1) {
-          return
-        }
+        if (res.data == 1) return
         this.hotSearch = res.data.slice(0, 3)
         uni.setStorageSync('hotSearch', this.resou)
       })
@@ -505,7 +440,6 @@ export default {
       let d = this.$api.http.get('banner/banner_all_item') //轮播图
 
       Promise.all([a, b, c, d]).then(res => {
-        console.log('获取数据成功')
         this.productList = res[0].data
         this.newProduct = res[1].data
         this.category = res[2].data
@@ -525,7 +459,6 @@ export default {
         url = url + '&sfm=' + my.data.sfm
       }
       // #endif
-      console.log(url)
       uni.navigateTo({
         url: url
       })
@@ -561,8 +494,6 @@ export default {
       })
     },
     tosearch (item) {
-      console.log(this.resou)
-      console.log(item)
       uni.navigateTo({
         url: '../extend-view/productList/productList?key=' + item
       })
@@ -582,7 +513,6 @@ export default {
     if (my && my.data && my.data.sfm) {
       path = path + '?sfm=' + my.data.sfm
     }
-    console.log('path:', path)
     return {
       title: this.shop_name,
       path: path
@@ -775,7 +705,7 @@ page {
 
 .tui-banner-bg {
   display: flex;
-  height: 180rpx;
+  height: 310rpx;
   background: #fb586a;
   position: relative;
 }

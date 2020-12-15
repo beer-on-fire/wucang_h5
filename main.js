@@ -8,9 +8,7 @@ App.mpType = 'app'
 
 const msg = (title, duration = 1500, mask = false, icon = 'none') => {
   //统一提示方便全局修改
-  if (Boolean(title) === false) {
-    return
-  }
+  if (Boolean(title) === false) return
   uni.showToast({
     title,
     duration,
@@ -27,7 +25,7 @@ const prePage = () => {
   return prePage.$vm
 }
 Vue.prototype.$api = { msg, http, prePage }
-Vue.prototype.$getimg = Api_url
+Vue.prototype.$getimg = ''
 Vue.prototype.shop_name = '吾仓集市'
 
 Vue.prototype.version = 'shops2' //首页,个人中心
