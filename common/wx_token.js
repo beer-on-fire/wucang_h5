@@ -38,7 +38,6 @@ class WxToken {
 
   login(type) {
     const code = this.GetUrlParame('code') // 截取code
-
     if (!code) {
       this.get_code(type)
     } else {
@@ -47,7 +46,7 @@ class WxToken {
   }
 
   get_code(type) {
-    console.log('获取code')
+    console.log('获取微信code', window.location.href)
     var domine = window.location.href.split('#')[0] // 微信会自动识别#    并且清除#后面的内容
     domine = domine.split('?code')[0]
     uni.request({

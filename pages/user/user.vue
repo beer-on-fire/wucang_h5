@@ -291,29 +291,25 @@ export default {
       _self.switch_list = _self.sys_switch
       console.log("++++", _self.switch_list)
     },
-    get_my () {
-      console.log('获取个人信息')
-      const that = this
-      const my = cache_user.info_wait()
-      my.then(res => {
-        if (res && res.headpic && res.nickname) {
-          that.userinfo = {
-            avatarUrl: res.headpic,
-            nickName: res.nickname,
-            web_auth: res.web_auth,
-            points: res.points
-          }
-        } else {
-          //auth传到组件，组件监听auth是否有变动
-          that.auth.is_name = !that.auth.is_name
+    async get_my () {
+      const my = await cache_user.info_wait()
+      console.log('获取个人信息', my)
+      if (my && my.headpic && my.nickname) {
+        this.userinfo = {
+          avatarUrl: my.headpic,
+          nickName: my.nickname,
+          web_auth: my.web_auth,
+          points: my.points
         }
-        that.get_user_vip_status()
-      })
+      } else {
+        //auth传到组件，组件监听auth是否有变动
+        this.auth.is_name = !this.auth.is_name
+      }
+      this.get_user_vip_status()
     },
     check_mobile () {
-      console.log('开始检查电话')
       let my = uni.getStorageSync('my')
-      console.log(my)
+      console.log('开始检查电话', my)
       if (my && my.data.mobile) {
         this.is_mobile = false
       } else {
@@ -333,20 +329,17 @@ export default {
 
 
     },
-    load () {
-      const that = _self
-      const my = cache_user.info_wait()
-      my.then(res => {
-        if (res && res.headpic && res.nickname) {
-          that.userinfo = {
-            avatarUrl: res.headpic,
-            nickName: res.nickname
-          }
-        } else {
-          //auth传到组件，组件监听auth是否有变动
-          that.auth.is_name = !that.auth.is_name
+    async load () {
+      const my = await cache_user.info_wait()
+      if (my && my.headpic && my.nickname) {
+        that.userinfo = {
+          avatarUrl: my.headpic,
+          nickName: my.nickname
         }
-      })
+      } else {
+        //auth传到组件，组件监听auth是否有变动
+        _self.auth.is_name = !_self.auth.is_name
+      }
 
       _self.switch_list = this.sys_switch
       _self.check_switch()
@@ -421,9 +414,8 @@ export default {
         url: '/pages/list/list'
       })
     },
-    jump_toorder (e) {
-      console.log(Check.a())
-      if (!Check.a()) {
+    async jump_toorder (e) {
+      if (!await Check.a()) {
         return
       } else {
         uni.navigateTo({
