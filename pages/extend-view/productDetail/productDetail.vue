@@ -895,8 +895,6 @@ export default {
       }
       //----------------------------------------------判断限时活动是否开启结束
     },
-
-
     //商品分类 普通商品-pro  限时折扣-xs  普通拼团-pt 好友-haoyou_pt 新人拼团-new_pt
     get_pro_type (item) {
       const that = this
@@ -906,7 +904,6 @@ export default {
       }
       if (item.pt != '[]') {
         that.pro_type = 'pt'
-
         if (item.pt.pt.is_cou_tuan == 1) {
           that.pro_type = 'haoyou_pt'
         }

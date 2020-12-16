@@ -1,6 +1,6 @@
 {
     "name": "吾仓集市",
-    "appid": "wx92b34c02f6759c4e",
+    "appid": "wxd127ccb228204486",
     "description": "",
     "versionName": "1.0.0",
     "versionCode": "100",
@@ -58,7 +58,7 @@
             "sdkConfigs": {
                 "oauth": {
                     "weixin": {
-                        "appid": "wx8774ce1e8dd750c6",
+                        "appid": "wxd127ccb228204486",
                         "appsecret": "1a184e982936cf6e98b592a61710f583",
                         "UniversalLinks": ""
                     }
@@ -69,7 +69,7 @@
                             "ios",
                             "android"
                         ],
-                        "appid": "wx8774ce1e8dd750c6",
+                        "appid": "wxd127ccb228204486",
                         "UniversalLinks": ""
                     }
                 },
@@ -113,7 +113,7 @@
     "quickapp": {},
     /* 小程序特有相关 */
     "mp-weixin": {
-        "appid": "wx92b34c02f6759c4e",
+        "appid": "wxd127ccb228204486",
         "setting": {
             "urlCheck": false,
             "minified": true,

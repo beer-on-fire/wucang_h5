@@ -778,6 +778,7 @@ export default {
         })
       } else {
         //普通下单
+        console.log(1111111, obj)
         order_json = await this.$api.http.post(url, obj).then(res => {
           return res
         })

@@ -106,6 +106,7 @@ export default {
   methods: {
     xz_sku_cs (ik, iv) {
       this.sku_arr = this.list
+      console.log('商品详情-库存：', this.sku_arr)
       this.$root.xz_sku_cs(ik, iv)
     },
     sure (e) {
