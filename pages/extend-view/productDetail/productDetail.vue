@@ -133,7 +133,7 @@
 
           <!-- 分享按钮 -->
           <!-- #ifdef MP-WEIXIN -->
-          <button @click="share_func"
+          <!-- <button @click="share_func"
             class="tui-share-btn tui-share-position share"
             style="margin-top: -7px;">
             <tui-tag type="gray"
@@ -144,10 +144,10 @@
                 style="color:#999;font-size:15px"></view>
               <text class="tui-share-text tui-gray">分享</text>
             </tui-tag>
-          </button>
+          </button> -->
           <!-- #endif -->
           <!-- #ifdef H5 -->
-          <button @click="new_share_func"
+          <!-- <button @click="new_share_func"
             class="tui-share-btn tui-share-position share"
             style="margin-top: -7px;">
             <tui-tag type="gray"
@@ -158,7 +158,7 @@
                 style="color:#999;font-size:15px"></view>
               <text class="tui-share-text tui-gray">分享</text>
             </tui-tag>
-          </button>
+          </button> -->
           <!-- #endif -->
 
           <!-- 分享按钮 -->
@@ -177,12 +177,12 @@
         <!-- 活动倒计时结束 -->
       </view>
 
-      <!-- 领取优惠券 -->
+      <!-- 领取红包 -->
       <GetCoupon v-if="couponList.length > 0"
         :coupon_list="couponList"
         @toggleMask="toggleMask"></GetCoupon>
 
-      <!-- 领取优惠券结束 -->
+      <!-- 领取红包结束 -->
 
       <view class="tui-basic-info tui-mtop tui-radius-all"
         v-if="list.sku && list.sku.length>0">
@@ -201,8 +201,10 @@
       <view class="pintuan tui-radius-all tui-mtop"
         v-if="is_pt && !is_new_pt && list.pt.pt.is_cou_tuan == 0">
         <view class="pt_top">
-          <view class="pt_top_l">{{pindan.length}}人在拼单，可直接参与</view>
+          <view class="pt_top_l"
+            @click="showPopupxx">{{pindan.length}}人在拼单，{{!pindan.length?'点击下方开团':'可直接参与'}}</view>
           <view class="pt_top_r"
+            v-if="pindan.length"
             @click="is_pindan=true">查看更多
             <tui-icon name="arrowright"
               :size="22"
@@ -234,7 +236,6 @@
               <view class="pt_r"
                 @tap="showPopups(item.id)">去拼单</view>
             </block>
-
           </view>
         </view>
       </view>
@@ -253,7 +254,8 @@
       <!-- *****************评价**************** -->
       <view class="tui-cmt-box tui-mtop tui-radius-all">
         <view class="tui-list-cell tui-last tui-between">
-          <view class="tui-bold tui-cell-title">评价</view>
+          <view class="tui-bold tui-cell-title"
+            style="width:62px">评价({{list.evaluates}})</view>
           <view @click="jump_toevaluate(list.goods_id)">
             <text class="tui-cmt-all">查看全部</text>
             <!-- <tui-icon name="more-fill" size="20" color="#ff201f"></tui-icon> -->
@@ -312,6 +314,7 @@
       :price="price"
       :list="list"
       :sku_arr="sku_arr"
+      :is_pt="is_pt"
       @hidePopup="hidePopup"
       @sku_change_num="sku_change_num"
       @sure="sure"
@@ -319,7 +322,7 @@
 
     <!--规格选择-->
 
-    <!-- 优惠券面板 -->
+    <!-- 红包面板 -->
     <view class="mask"
       :class="maskState===0 ? 'none' : maskState===1 ? 'show' : ''"
       @click="toggleMask">
@@ -499,7 +502,7 @@ export default {
       is_share: false,
       detail: true, //限时折扣
       couponList: [],
-      maskState: 0, //优惠券面板显示状态
+      maskState: 0, //红包面板显示状态
       height: 64, //header高度
       top: 0, //标题图标距离顶部距离
       scrollH: 0, //滚动总高度
@@ -1145,7 +1148,7 @@ export default {
     },
 
 
-    lq_coupon (id) { //领取优惠券
+    lq_coupon (id) { //领取红包
       // this.$api.http.get("coupon/add_coupon", {
       // 	id: id
       // }).then(res => {
@@ -1162,7 +1165,7 @@ export default {
 
       })
     },
-    //显示优惠券面板
+    //显示红包面板
     toggleMask (type) {
       let timer = type === 'show' ? 10 : 300
       let state = type === 'show' ? 1 : 0
@@ -1219,27 +1222,28 @@ export default {
     },
     //开团
     showPopupxx () {
+      // 我是团长
       this.shopping_type = 'shopping'
       this.popupShow = true
-      let is_kai = 1
-      uni.setStorageSync('is_kai', is_kai)
+      uni.setStorageSync('is_kai', 1)
     },
-    //直接购买
+    showPopups: function (id) {
+      // 别人是团长
+      this.popupShow = true
+      uni.setStorageSync('pid', id)
+      uni.setStorageSync('is_item', 1)
+    },
     showPopup: function (e, is_bottom_click) {
+      //直接购买
       this.is_bottom_click = is_bottom_click
+      uni.removeStorageSync('is_kai')
       if (e == 'car') {
         this.shopping_type = 'car'
       }
       if (e == 'shopping') {
-
         this.shopping_type = 'shopping'
       }
       this.popupShow = true
-    },
-    showPopups: function (id) {
-      this.popupShow = true
-      uni.setStorageSync('pid', id)
-      uni.setStorageSync('is_item', 1)
     },
     hidePopup: function () {
       this.popupShow = false
@@ -1743,7 +1747,7 @@ page {
   }
 }
 
-/* 优惠券面板 */
+/* 红包面板 */
 .mask {
   display: flex;
   align-items: flex-end;
@@ -1779,7 +1783,7 @@ page {
   }
 }
 
-/* 优惠券列表 */
+/* 红包列表 */
 .coupon-item {
   display: flex;
   flex-direction: column;

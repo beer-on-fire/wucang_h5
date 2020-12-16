@@ -359,7 +359,7 @@ export default {
     },
     jump (url, id, name, item) {
       const that = this
-      if (name == "优惠券") { //优惠券
+      if (name == "红包") { //红包
         if (!Check.a()) {
           return
         }

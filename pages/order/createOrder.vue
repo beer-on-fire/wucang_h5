@@ -105,15 +105,18 @@
         <view class="jr_tit">为您加入仅差{{pt_data.num}}人的团，支付后即可拼购成功</view>
         <view class="jr_img">
           <view class="img_01 img_01_border">
-            <img :src="pt_data.c_pic"></img>
+            <img :src="pt_data.c_pic"
+              alt="团长"></img>
             <view class="zhicheng">团长</view>
           </view>
           <view class="img_01"
             v-for="item of pt_data.item_pic">
-            <img :src="item"></img>
+            <img :src="item"
+              alt="成员"></img>
           </view>
           <view class="img_01">
-            <img :src="head.avatarUrl"></img>
+            <img :src="head.avatarUrl"
+              alt="我"></img>
             <view class="zhicheng">待支付</view>
           </view>
         </view>
@@ -126,7 +129,8 @@
         <view class="jr_tit">立即支付，即可开团成功</view>
         <view class="jr_img">
           <view class="img_01 img_01_border">
-            <img :src="head.avatarUrl"></img>
+            <img :src="head.avatarUrl"
+              alt="我"></img>
             <view class="zhicheng">待支付</view>
           </view>
           <view class="img_01 img_01_borderx"
@@ -140,13 +144,13 @@
 
     <!-- 优惠明细 -->
     <view class="yt-list"
-      v-if="!buy_data[0]['discount']&&!buy_data[0]['pt']">
+      v-if="buy_data.length&&!buy_data[0]['discount']&&!buy_data[0]['pt']">
       <view class="yt-list-cell b-b"
         @click="toggleMask('show')">
         <view class="cell-icon">
           券
         </view>
-        <text class="cell-tit clamp">优惠券</text>
+        <text class="cell-tit clamp">红包</text>
 
         <text class="cell-tip active">
           {{coupon_text}}
@@ -218,14 +222,15 @@
         @click="submit">提交订单</text>
     </view>
 
-    <!-- 优惠券面板 -->
+    <!-- 红包面板 -->
     <view class="mask"
       :class="maskState===0 ? 'none' : maskState===1 ? 'show' : ''"
       @click="toggleMask">
       <view class="mask-content">
-        <!-- 优惠券页面，仿mt -->
+        <!-- 红包页面，仿mt -->
         <scroll-view class="scroll"
-          scroll-y>
+          scroll-y
+          v-if="couponList.length">
           <view class="coupon-item"
             v-for="(item,index) in couponList"
             :key="index">
@@ -258,9 +263,10 @@
             </block>
           </view>
         </scroll-view>
-
+        <div v-else
+          style="text-align:center;">暂无可用红包</div>
         <view class="btn"
-          @click="cancel_use">不使用优惠券</view>
+          @click="cancel_use">不使用红包</view>
       </view>
     </view>
 
@@ -317,7 +323,7 @@ export default {
       save_cache: {},
       order_id: 0,
       getimg: this.$getimg,
-      maskState: 0, //优惠券面板显示状态
+      maskState: 0, //红包面板显示状态
       desc: '', //备注
       payType: 1, //1微信 2支付宝
       yunfei_money: 0, //运费
@@ -327,7 +333,7 @@ export default {
       buy_data: '',
       address: '',
       paying: '', //防止多次提交订单
-      coupon_text: '选择优惠券',
+      coupon_text: '选择红包',
       coupon_money: 0, //优惠金额		
       switch_list: '',
       obj: {
@@ -353,7 +359,6 @@ export default {
     Formt
   },
   async onLoad (option) {
-
     this.sys_switch = uni.getStorageSync('switch')
     this.form_switch = this.sys_switch.is_form == 1 ? true : false
     this.state = option.state
@@ -362,8 +367,6 @@ export default {
     if (option.state == 'buy') {
       let buy_data = uni.getStorageSync('buy')
       console.log('购买的商品：', buy_data)
-      //官方测试代码，如忘记删除，请自行删除一下
-      // this.diy_form()
       if (this.form_switch) {
         this.get_wn_data()
       }
@@ -386,12 +389,12 @@ export default {
     }
     if (option.state == 'car') {
       let buy_data = uni.getStorageSync('cart')
+      console.log('购物车里的货物详情：', buy_data)
       let arr = []
       let cache = {}
       let x = 0
       for (let k in buy_data) {
         const v = buy_data[k]
-        console.log(k, v)
         if (v.radio) {
           arr[x] = v //购物车中选中的商品
           x++
@@ -407,12 +410,9 @@ export default {
         let v = buy_data[k]
         if (v.style == 0) {
           this.address_show = true
-          console.log('实物商品', this.address_show)
           break
         }
       }
-      console.log('虚拟商品', this.address_show)
-
     }
     // if(this.buy_data[0].goods_name=="吾仓集市-授权"){				
     // 	this.$api.http.get('index/get_file?type=3').then(res => {
@@ -423,7 +423,6 @@ export default {
     let id = uni.getStorageSync('pid')
     if (id) {
       this.pid = id
-      console.log(id)
       this.is_pt = 1
       this.get_pid(id)
     }
@@ -432,8 +431,6 @@ export default {
       avatarUrl: my.headpic
     }
     this.is_kai = uni.getStorageSync('is_kai')
-    uni.removeStorageSync('is_kai')
-    console.log('onLoad', this.buy_data)
     this._load()
     this.js_goods_money()
     this.$api.http.get('address/get_default_address').then(res => {
@@ -447,8 +444,8 @@ export default {
   onShow () {
     this.$api.http.get('address/get_default_address').then(res => {
       // orderModel.getAddressDefault().then(res=>{
+      console.log("默认的寄件地址", res.data)
       this.address = res.data
-      console.log("请求地址", res.data)
     })
 
     this.get_yunfei()
@@ -475,10 +472,7 @@ export default {
     //获取vip
     get_user_vip_status () {
       let vip_status = uni.getStorageSync('my')
-      console.log(vip_status)
-      if (vip_status.data && vip_status.data.vip && vip_status.data.vip.status == 1) {
-        return true
-      }
+      if (vip_status.data && vip_status.data.vip && vip_status.data.vip.status == 1) return true
       return false
     },
     radioChange (e) {
@@ -494,21 +488,15 @@ export default {
       }
     },
     get_data (e) {
-      console.log("eeee")
-      console.log(JSON.stringify(e))
       this.obj.other = JSON.stringify(e)
-
-
-
     },
     //计算所有商品金额
     js_goods_money () {
       const buy = this.buy_data
-      console.log(this.get_user_vip_status())
+      console.log('vip状态：', this.get_user_vip_status())
       let total = 0
       for (let k in buy) {
         const v = buy[k]
-        console.log(v)
         if (v.discount) {
           total += v.price * v.num
         } else {
@@ -532,8 +520,8 @@ export default {
       that.invoice_switch = this.switch_list.is_invoice == 1 ? true : false
     },
     _load () {
-      console.log('load')
       this.$api.http.get('coupon/user/get_coupon').then(res => {
+        console.log('红包列表：', res)
         // orderModel.getOrderUserCoupon().then(res=>{
         this.couponList = res.data
       })
@@ -550,6 +538,7 @@ export default {
       // }).then(res => {
       orderModel.getPtItem(id).then(res => {
         this.pt_data = res.data
+        console.log('拼团成员：', res.data)
         uni.removeStorageSync('pid')
       })
     },
@@ -569,7 +558,7 @@ export default {
     },
     //获取运费
     get_yunfei () {
-      console.log('get_yunfei', this.buy_data)
+      console.log('运费计算：', this.buy_data)
       const buy_data = this.buy_data
       let obj = []
       for (let k in buy_data) {
@@ -577,15 +566,13 @@ export default {
         obj[k] = {}
         obj[k]['goods_id'] = v.goods_id
         obj[k]['num'] = v.num
-        console.log('v:', obj)
       }
-      console.log('get_obj', obj)
       this.$api.http.post('product/get_shipment_price', obj).then(res => {
         // productModel.postProductSimPrice(obj).then(res=>{
         this.yunfei_money = res.data
       })
     },
-    //显示优惠券面板
+    //显示红包面板
     toggleMask (type) {
       let timer = type === 'show' ? 10 : 300
       let state = type === 'show' ? 1 : 0
@@ -596,7 +583,7 @@ export default {
       }, timer)
 
     },
-    //使用优惠券
+    //使用红包
     to_use (index) {
       this.maskState = 0
       this.coupon_id = this.couponList[index].id ? this.couponList[index].id : 0
@@ -604,12 +591,12 @@ export default {
       this.coupon_money = reduce
       this.coupon_text = '已优惠' + reduce + '元'
     },
-    //取消使用优惠券
+    //取消使用红包
     cancel_use () {
       this.maskState = 0
       this.coupon_id = 0
       this.coupon_money = 0
-      this.coupon_text = '选择优惠券'
+      this.coupon_text = '选择红包'
     },
     numberChange (data) {
       this.number = data.number
@@ -734,8 +721,6 @@ export default {
       if (this.sys_switch.is_form == 1) {
         this.$refs.child.get_form()
       }
-
-
 
       let is_pin = uni.getStorageSync('is_item')
       uni.removeStorageSync('is_item')
@@ -1536,7 +1521,7 @@ page {
   }
 }
 
-/* 优惠券面板 */
+/* 红包面板 */
 .mask {
   display: flex;
   align-items: flex-end;
@@ -1590,7 +1575,7 @@ page {
   max-height: 55vh;
 }
 
-/* 优惠券列表 */
+/* 红包列表 */
 .coupon-item {
   display: flex;
   flex-direction: column;

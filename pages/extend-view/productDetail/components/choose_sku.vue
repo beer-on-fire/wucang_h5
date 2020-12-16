@@ -69,7 +69,7 @@
               shape="circle"
               size="mini"
               class="tui-flex-1"
-              @click="sure('shopping')">去购买</tui-button>
+              @click="sure('shopping')">{{is_pt?'去开团':'去购买'}}</tui-button>
           </block>
 
         </view>
@@ -97,7 +97,7 @@ export default {
       getimg: this.$getimg,
     }
   },
-  props: ['popupShow', 'list', 'price', 'sku_arr', 'num', 'is_bottom_click'],
+  props: ['popupShow', 'list', 'price', 'sku_arr', 'num', 'is_bottom_click', 'is_pt'],
   watch: {
     popupShow (e) {
       this.popupShow = e
@@ -105,8 +105,8 @@ export default {
   },
   methods: {
     xz_sku_cs (ik, iv) {
-      this.sku_arr = this.list
-      console.log('商品详情-库存：', this.sku_arr)
+      console.log('选中的商品详情-库存：', this.list)
+      this.sku_arr = { ...this.list.sku_arr }
       this.$root.xz_sku_cs(ik, iv)
     },
     sure (e) {

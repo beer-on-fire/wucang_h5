@@ -37,13 +37,13 @@
         <view class="tit"
           v-if="vip==0">
           <text class="yticon icon-iLinkapp-"></text>
-          普通用户 <text style="margin-left: 40px;">积分：{{userinfo.points}}</text>
+          普通用户
         </view>
-        <view class="tit"
+        <!-- <view class="tit"
           v-else>
           <text class="yticon icon-iLinkapp-"></text>
           尊贵会员 <text style="margin-left: 40px;">积分：{{userinfo.points}}</text>
-        </view>
+        </view> -->
 
         <text class="e-m">吾仓集市</text>
         <text class="e-b">欢迎使用吾仓集市</text>
@@ -67,7 +67,7 @@
 				</view>
 				<view class="tj-item">
 					<text class="num">0</text>
-					<text>优惠券</text>
+					<text>红包</text>
 				</view>
 				<view class="tj-item">
 					<text class="num">20</text>
@@ -121,7 +121,7 @@
         </view>
         <view class="bangding"
           v-if="is_mobile">
-          <view class="bd-l">找不到订单和优惠券？绑定手机试试</view>
+          <view class="bd-l">找不到订单和红包？绑定手机试试</view>
           <!-- <view class="bd-r" @click="bind">立即绑定</view> -->
           <!-- #ifdef MP-WEIXIN -->
           <button class="bd-r"
@@ -153,7 +153,7 @@
         <view @click="jump_tomycoupon">
           <list-cell icon="icon-tuijian"
             iconColor="#54b4ef"
-            title="我的优惠券"></list-cell>
+            title="我的红包"></list-cell>
         </view>
         <!-- 演示 -->
         <view @click="jump_tocms"
