@@ -366,7 +366,7 @@ export default {
     this.check_switch()
     if (option.state == 'buy') {
       let buy_data = uni.getStorageSync('buy')
-      console.log('购买的商品：', buy_data)
+      console.log('直接购买的商品信息：', buy_data)
       if (this.form_switch) {
         this.get_wn_data()
       }
@@ -377,19 +377,16 @@ export default {
         let v = buy_data[k]
         if (v.style == 0) {
           this.address_show = true
-          console.log('实物商品', this.address_show)
           break
         } else {
           this.address_show = false
-          console.log('虚拟商品', this.address_show)
           break
         }
       }
-      console.log('虚拟商品', this.address_show)
     }
     if (option.state == 'car') {
       let buy_data = uni.getStorageSync('cart')
-      console.log('购物车里的货物详情：', buy_data)
+      console.log('购物车里的商品信息：', buy_data)
       let arr = []
       let cache = {}
       let x = 0
@@ -545,7 +542,6 @@ export default {
     //判断商品中是否有分销商品
     check_fx_pro () {
       const buy = this.buy_data
-
       let fx_swtich = false
       for (let k in buy) {
         const v = buy[k]
@@ -677,7 +673,6 @@ export default {
 
       }
       obj.json = sku
-      console.log('obj', obj)
       return obj
     },
 
@@ -686,9 +681,8 @@ export default {
         this.$api.msg('未填写地址')
         return
       }
-      if (this.paying) {
-        return
-      }
+      if (this.paying) return
+
       let url = ''
       //#ifdef MP-WEIXIN || APP-PLUS
       url = 'order/create'
@@ -701,7 +695,7 @@ export default {
         url = 'order/create'
       }
       //#endif
-      console.log('url:', url)
+      console.log('创建订单请求的url:', url)
       return url
     },
     xy_approve (e) {
@@ -714,7 +708,7 @@ export default {
     //创建订单
     async submit () {
       if (this.pay_money == 0) {
-        this.$api.msg('价格错误')
+        this.$api.msg('价格错误', this.pay_money)
         return
       }
       //万能表单，不知道写的什么
@@ -725,17 +719,15 @@ export default {
       let is_pin = uni.getStorageSync('is_item')
       uni.removeStorageSync('is_item')
       const url = this.check_sub_data()
-      if (!url) {
-        return
-      }
-      let obj = this.set_order_data()
+      if (!url) return
 
+      let obj = this.set_order_data()
 
       if (this.switch_list.drive_type > 0 && (!obj.drive_type || obj.drive_type == '')) {
         this.$api.msg('请选择配送方式')
         return
       }
-      console.log('submit:', obj)
+      console.log('创建订单入参:', obj)
       if (this.sku_id == '') {
         obj.sku_id = 0
       } else {
@@ -748,9 +740,7 @@ export default {
         // order_json = await this.$api.http.post('pt/create_pt_item', obj).then(res => {
         // 	return res
         // })
-        order_json = await orderModel.postPtCreateItem(obj).then(res => {
-          return res
-        })
+        order_json = await orderModel.postPtCreateItem(obj).then(res => (res))
       } else if (is_pin == 1) {
         obj.item_id = this.pid
         obj.is_captain_sign = 1
@@ -758,18 +748,13 @@ export default {
         // order_json = await this.$api.http.post('pt/create_pt', obj).then(res => {
         // 	return res
         // })
-        order_json = await orderModel.postPtCreateItems(obj).then(res => {
-          return res
-        })
+        order_json = await orderModel.postPtCreateItems(obj).then(res => (res))
       } else {
         //普通下单
-        console.log(1111111, obj)
-        order_json = await this.$api.http.post(url, obj).then(res => {
-          return res
-        })
+        order_json = await this.$api.http.post(url, obj).then(res => (res))
       }
       this.paying = true
-      console.log("创建订单：", order_json)
+      console.log("创建订单成功，拿到付款信息：", order_json)
       if (!order_json.data) {
         this.$api.msg(order_json.msg)
         setTimeout(() => {
@@ -779,7 +764,6 @@ export default {
       }
       this.order_id = order_json.data
 
-
       if (this.state == 'buy') {
         uni.removeStorageSync('buy')
       } else {
@@ -787,7 +771,6 @@ export default {
         uni.setStorageSync('cart', this.save_cache)
       }
       const order_id = order_json.data
-
       this.order_id = order_id
 
       //#ifdef MP-WEIXIN
@@ -795,29 +778,21 @@ export default {
       // 	id: order_id
       // }).then(res => {
       const pay_data = await orderModel.postOrderWxPay(order_id).then(res => {
-        console.log('pay:', res)
-
+        console.log('小程序支付:', res)
         return res
       })
       await this.pay(pay_data)
       //#endif
 
       //#ifdef APP-PLUS 
-      console.log('id:', order_id)
       // const app_data = await this.$api.http.post('order/pay/pre_app', {
       // 	id: order_id
       // }).then(res => {
-      const app_data = await orderModel.postOrderAppPay(order_id).then(res => {
-        console.log('app-pay:', res)
-        return res
-      })
-      console.log('获取到app支付参数：', app_data)
+      const app_data = await orderModel.postOrderAppPay(order_id).then(res => (res))
       await this.app_pay(app_data)
       //#endif
 
-
       //#ifdef H5
-
       let ua = window.navigator.userAgent.toLowerCase()
       if (ua.match(/MicroMessenger/i) == 'micromessenger') {
         /* const pay = await this.$api.http.post('order/second_pay', {
@@ -826,24 +801,17 @@ export default {
           console.log('pay:', res)
           return res
         }) */
-        console.log("进入公众号id")
+        console.log("微信浏览器支付：", this.order_id)
         this.wxPay(this.order_id)
-
-
-
       } else {
-
         uni.reLaunch({
           url: 'pay?order_num=' + this.order_id
         })
-
       }
-
       //#endif
     },
     //公众号支付
     wxPay (json) {
-
       if (typeof WeixinJSBridge == "undefined") {
         if (document.addEventListener) {
           document.addEventListener("WeixinJSBridgeReady", jsApiCall, false)
@@ -852,15 +820,12 @@ export default {
           document.attachEvent("onWeixinJSBridgeReady", jsApiCall)
         }
       } else {
-
         this.jsApiCall(json)
-
       }
     },
     jsApiCall (json) {
       const that = this
       console.log("公众号支付")
-
       WeixinJSBridge.invoke("getBrandWCPayRequest", json, function (res) {
         WeixinJSBridge.log('a:', res.err_msg)
         if (res.err_msg == "get_brand_wcpay_request:ok") {
@@ -886,7 +851,6 @@ export default {
     //小程序支付
     pay (data) {
       const order_id = this.order_id
-
       uni.requestPayment({
         provider: "wxpay",
         timeStamp: data.timeStamp,
@@ -910,11 +874,8 @@ export default {
     },
     //APP支付
     app_pay (data) {
-      console.log("app支付")
-      console.log(this.order_id)
-      console.log("app支付")
+      console.log("app支付", this.order_id)
       const order_id = this.order_id
-      console.log(data)
       uni.requestPayment({
         provider: "wxpay",
         orderInfo: JSON.stringify(data),

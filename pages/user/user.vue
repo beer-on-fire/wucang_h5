@@ -240,7 +240,6 @@ export default {
       _self.load()
     },
     is_mobile (n, o) {
-      console.log(n, o)
       this.is_mobile = n
     }
   },
@@ -287,9 +286,7 @@ export default {
       this.sys_switch = await this.promise_switch.then(res => {
         return res
       })
-      console.log("-----", this.sys_switch)
       _self.switch_list = _self.sys_switch
-      console.log("++++", _self.switch_list)
     },
     async get_my () {
       const my = await cache_user.info_wait()
@@ -315,13 +312,11 @@ export default {
       } else {
         this.is_mobile = true
       }
-      console.log(this.is_mobile)
     },
     get_user_vip_status () {
       let vip_status = uni.getStorageSync('my')
 
       if (vip_status.data && vip_status.data.vip && vip_status.data.vip.status == 1) {
-
         _self.vip = 1
       } else {
         _self.vip = 0
@@ -344,13 +339,12 @@ export default {
       _self.switch_list = this.sys_switch
       _self.check_switch()
       // #ifdef H5 || APP-PLUS
-      //wxtoken.verify('userinfo'); //手动授权获取openid和头像昵称	 			
+      wxtoken.verify('userinfo') //手动授权获取openid和头像昵称	 			
       // #endif
       _self.get_number()
     },
     check_switch () {
       const that = _self
-      console.log("check", _self.switch_list.fx_status)
       that.fx_switch = _self.switch_list.fx_status
     },
     bind (e) {
@@ -358,16 +352,13 @@ export default {
       let obj = {}
       obj.iv = e.detail.iv
       obj.encryptedData = e.detail.encryptedData
-      console.log(obj)
       //然后在第三方服务端结合 session_key 以及 app_id 进行解密获取手机号
 
       _self.$api.http.post('auth/bind_wx_mobile', obj).then(res => {
-        console.log(res)
         if (res.data == 1) {
           cache_user.reset_storage()
           _self.is_num = true
           _self.is_mobile = false
-          console.log('绑定成功')
           uni.showToast({
             title: '绑定成功',
             duration: 2000
@@ -376,7 +367,6 @@ export default {
       })
       // #endif
       // #ifdef H5
-      console.log('跳转手机绑定')
       uni.navigateTo({
         url: './bind_phone/bind_phone'
       })
@@ -415,7 +405,7 @@ export default {
       })
     },
     async jump_toorder (e) {
-      if (!await Check.a()) {
+      if (!Check.a()) {
         return
       } else {
         uni.navigateTo({

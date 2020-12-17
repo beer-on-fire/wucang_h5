@@ -1,7 +1,7 @@
 <template>
   <view class="cash">
     <view class="H10"></view>
-    <!-- <view class='txz'>提现至:</view> -->
+    <view class='txz'>提现至微信零钱:</view>
     <view class="H10"></view>
     <view class='money'>
       <view class='ktx'>可提现金额：0.00元</view>
@@ -18,12 +18,12 @@
 		<view class="kg_l">大额提现(单笔5万以上）</view>
 		<switch checked style="transform:scale(0.7)" />            
       </view> -->
-    <view class='khh'>银行名称 &emsp;<input type="text"
+    <!-- <view class='khh'>银行名称 &emsp;<input type="text"
         v-model="form.bk_name" /></view>
     <view class='khh'>银行户名 &emsp;<input type="text"
         v-model="form.bk_uname" /></view>
     <view class='khh'>银行卡号 &emsp;<input type="number"
-        v-model="form.card" /></view>
+        v-model="form.card" /></view> -->
     <view class='txfy'>
       <view class='txfy_01'>
         <view class='txfy_01_l'>提现费用:</view>
@@ -60,15 +60,13 @@ export default {
   onLoad (option) {
     this.money = option.money
     this.prmSwitch()
-    this.min_money = obj.min_money
   },
   methods: {
     async prmSwitch () {
-      let obj = await this.promise_switch.then(res => {
-        return res
-      })
+      let obj = await this.promise_switch.then(res => (res))
+      this.min_money = obj.min_money
     },
-    cash () //分销提现接口，直接使用
+    async cash () // 提现接口，直接使用
     {
       if (this.money * 1 < this.min_money * 1) {
         uni.showToast({
@@ -78,41 +76,62 @@ export default {
         })
         return
       }
-      if (!this.form.bk_name) {
-        uni.showToast({
-          icon: "none",
-          title: "未填写银行名称",
-          duration: 2000
-        })
-        return
-      }
-      if (!this.form.bk_uname) {
-        uni.showToast({
-          icon: "none",
-          title: "未填写银行户名",
-          duration: 2000
-        })
-        return
-      }
-      if (!this.form.card) {
-        uni.showToast({
-          icon: "none",
-          title: "未填写银行卡号",
-          duration: 2000
-        })
-        return
-      }
-      this.$api.http.post('fx/user/apply_api', this.form).then(res => {
-        uni.showToast({
-          icon: "none",
-          title: "提交申请成功！",
-          duration: 2000
-        })
-        setTimeout(() => {
-          uni.navigateBack()
-        }, 2000)
-      })
 
+      const obj = await this.getData()
+      if (!obj.data) {
+        this.$api.msg(obj.msg)
+        setTimeout(() => {
+          uni.navigateBack({})
+        }, 1000)
+        return
+      }
+      await this.wxPay(obj.data)
+    },
+    async getData () {
+      const params = {
+        openid: localStorage.getItem('openId'),
+        payNumber: Date.now().toString(),
+      }
+      const res = await this.$api.http.post('fx/user/apply_api', this.form)
+      return res.data
+    },
+    //公众号支付
+    wxPay (json) {
+      if (typeof WeixinJSBridge == "undefined") {
+        if (document.addEventListener) {
+          document.addEventListener("WeixinJSBridgeReady", jsApiCall, false)
+        } else if (document.attachEvent) {
+          document.attachEvent("WeixinJSBridgeReady", jsApiCall)
+          document.attachEvent("onWeixinJSBridgeReady", jsApiCall)
+        }
+      } else {
+        this.jsApiCall(json)
+      }
+    },
+    jsApiCall (json) {
+      const that = this
+      console.log("提现开始")
+      WeixinJSBridge.invoke("getBrandWCPayRequest", json, function (res) {
+        WeixinJSBridge.log('a:', res.err_msg)
+        if (res.err_msg == "get_brand_wcpay_request:ok") {
+          that.$api.msg("提现发起成功!")
+        } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
+          that.$api.msg("提现取消")
+        } else {
+          that.$api.msg("提现失败，请重试")
+        }
+        if (this.is_kai == 1) {
+          uni.navigateTo({
+            url: '../invite/invite?id=' + that.pid
+          })
+          return
+        }
+        setTimeout(() => {
+          uni.redirectTo({
+            url: '/pages/order/order'
+          })
+        }, 1000)
+      })
     }
   }
 };

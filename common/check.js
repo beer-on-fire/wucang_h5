@@ -36,14 +36,12 @@ export default {
       },
       success: function(res) {
         var valid = res.data.isValid
-        console.log(res)
         if (!valid || res.data.statusCode == 401) {
           console.log('token不存在')
           x = 0
         } else {
           x = 1
         }
-        console.log(x)
         return x
       }
     })
@@ -125,7 +123,6 @@ export default {
     let is_login = ''
     // #ifdef MP-WEIXIN
     is_login = await that.check_login_xcx()
-    console.log('xcx', is_login)
     // #endif
 
     // #ifdef H5
@@ -143,6 +140,9 @@ export default {
     // #ifdef APP-PLUS
     is_login = await that.check_login_APP()
     // #endif
+
+    console.log('是否已经登录', is_login)
+
     if (is_login == 0) {
       that.judge_gl()
       return false

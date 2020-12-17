@@ -1065,7 +1065,7 @@ export default {
     async add_shopping () {
       if (!this.check_sku()) return
       // #ifndef APP-PLUS
-      if (!await Check.a()) return
+      if (!Check.a()) return
       // #endif
 
       // #ifdef APP-PLUS
@@ -1111,7 +1111,6 @@ export default {
       const sku_index = this.sku_index
       const goods = this.list
       if (goods.stock === 0) {
-        console.log('库存不足')
         this.$api.msg('库存不足')
         return
       }
@@ -1252,9 +1251,7 @@ export default {
       this.value = e.value
     },
     collecting: function () {
-      if (!Check.a()) {
-        return
-      }
+      if (!Check.a()) return
       if (this.collected) {
         this.$api.http.put('favorite/del_fav', {
           id: this.id

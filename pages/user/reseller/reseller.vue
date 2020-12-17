@@ -82,11 +82,20 @@ export default {
   methods: {
     _load () {
       this.$api.http.get('fx/user/get_fx_money').then(res => {
+        console.log('分销所得金额：', res.data)
         this.data = res.data
-        console.log(this.data)
       })
     },
     jump_cash () {
+      const isWX = /MicroMessenger/i.test(navigator.userAgent)
+      if (!isWX) {
+        uni.showToast({
+          icon: "none",
+          title: "请在微信内打开本页",
+          duration: 2000
+        })
+        return
+      }
       uni.navigateTo({
         url: '/pages/user/cash/cash?money=' + this.data.money,
       })
