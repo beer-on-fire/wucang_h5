@@ -65,7 +65,6 @@
 				// this.tabbar = this.$api.http.get('category/all_category').then(res => {
 					
 				this.tabbar= categoryModel.getCategoryAll().then( res=>{
-					console.log(res)
 					let list = res.data
 					list.forEach(item => {
 						if (!item.pid) {

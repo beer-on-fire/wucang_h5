@@ -207,6 +207,21 @@
 			}
 		},
 		{
+			"path": "pages/discover/discover",
+			"style": {
+				"navigationBarTitleText": "发现",
+				"navigationBarBackgroundColor": "#FCFCFC",
+				"navigationBarTextStyle": "black",
+				"backgroundColorTop": "#fcfcfc",
+				"backgroundColorBottom": "#fcfcfc",
+				"disableScroll": true,
+				"app-plus": {
+					"bounce": "none"
+				},
+				"enablePullDownRefresh": true
+			}
+		},
+		{
 			"path": "pages/extend-view/productList/productList",
 			"style": {
 				"navigationBarBackgroundColor": "#fff",
@@ -517,7 +532,7 @@
 		{
 			"path": "pages/pindetail/pindetail",
 			"style": {
-				"navigationBarTitleText": "拼团成功"
+				"navigationBarTitleText": "拼购成功"
 			}
 		},
 		{
@@ -802,16 +817,16 @@
 				"selectedIconPath": "static/images/tabbar/code_active.png"
 			},
 			{
-				"pagePath": "pages/category/category",
-				"text": "分类",
+				"pagePath": "pages/discover/discover",
+				"text": "发现",
 				"iconPath": "static/images/tabbar/extend_gray.png",
 				"selectedIconPath": "static/images/tabbar/extend_active.png"
 			},
 			{
-				"pagePath": "pages/cart/cart",
-				"text": "购物车",
-				"iconPath": "static/images/tabbar/thor_gray.png",
-				"selectedIconPath": "static/images/tabbar/thor_active.png"
+				"pagePath": "pages/user/like/like",
+				"text": "收藏",
+				"iconPath": "static/images/tabbar/like_gray.png",
+				"selectedIconPath": "static/images/tabbar/like_active.png"
 			},
 			{
 				"pagePath": "pages/user/user",

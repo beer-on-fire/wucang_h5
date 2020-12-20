@@ -119,23 +119,24 @@
               type="error"></uni-badge>
           </view>
         </view>
-        <view class="bangding"
+
+        <!-- <view class="bangding"
           v-if="is_mobile">
-          <view class="bd-l">找不到订单和红包？绑定手机试试</view>
-          <!-- <view class="bd-r" @click="bind">立即绑定</view> -->
-          <!-- #ifdef MP-WEIXIN -->
-          <button class="bd-r"
+          <view class="bd-l">找不到订单和红包？绑定手机试试</view> -->
+        <!-- <view class="bd-r"
+            @click="bind">立即绑定</view> -->
+        <!-- #ifdef MP-WEIXIN -->
+        <!-- <button class="bd-r"
             size="mini"
             open-type="getPhoneNumber"
-            @getphonenumber="bind">绑定手机</button>
-          <!-- #endif -->
-          <!-- #ifdef H5 -->
-          <button class="bd-r"
+            @getphonenumber="bind">绑定手机</button> -->
+        <!-- #endif -->
+        <!-- #ifdef H5 -->
+        <!-- <button class="bd-r"
             size="mini"
-            @click="bind">绑定手机</button>
-          <!-- #endif -->
-
-        </view>
+            @click="bind">绑定手机</button> -->
+        <!-- #endif -->
+        <!-- </view> -->
       </view>
 
       <!-- 浏览历史 -->
@@ -145,16 +146,16 @@
             iconColor="#5fcda2"
             title="地址管理"></list-cell>
         </view>
-        <view @click="jump_tolike">
+        <!-- <view @click="jump_tolike">
           <list-cell icon="icon-shoucang"
             iconColor="#DF2073"
             title="我的收藏"></list-cell>
-        </view>
-        <view @click="jump_tomycoupon">
+        </view> -->
+        <!-- <view @click="jump_tomycoupon">
           <list-cell icon="icon-tuijian"
             iconColor="#54b4ef"
             title="我的红包"></list-cell>
-        </view>
+        </view> -->
         <!-- 演示 -->
         <view @click="jump_tocms"
           v-if="userinfo.web_auth==1">

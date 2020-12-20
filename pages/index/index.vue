@@ -1,8 +1,8 @@
 <template>
-  <view class="container">
+  <view class="container"
+    style="background:#fff;">
 
     <!--header-->
-
     <view class="tui-header">
       <view class="notice"
         v-if="gundong">
@@ -67,6 +67,17 @@
         <view class="tui-primary-bg tui-route-right"></view>
         <!--banner-->
         <view class="tui-banner-box">
+          <view class="tui-category-box">
+            <scroll-view scroll-x>
+              <view style="white-space:nowrap;display: flex;margin-right:10px;">
+                <view :class="{'tui-category-name1':true,'categoryActive':index === currentCategory}"
+                  v-for="(item,index) in flist"
+                  :key="index"
+                  @click="tabtap(item,index)">{{item.category_name}}</view>
+              </view>
+            </scroll-view>
+
+          </view>
           <swiper :indicator-dots="true"
             :autoplay="true"
             :interval="5000"
@@ -87,15 +98,19 @@
       </view>
     </view>
 
-    <view class="tui-product-category">
-
-      <!-- <view class="tui-category-item" v-for="(item,index) in category" :key="index" :data-key="item.name"> 
-				<navigator :url="item.url">
-					<image :src="getimg+item.img_id" class="tui-category-img" mode="scaleToFill"></image>
-					<view class="tui-category-name">{{item.nav_name}}</view>
-				</navigator>
-			</view> -->
-    </view>
+    <!-- <view class="tui-product-category">
+      <view class="tui-category-item"
+        v-for="(item,index) in category"
+        :key="index"
+        :data-key="item.name">
+        <navigator :url="item.url">
+          <image :src="getimg+item.img_id"
+            class="tui-category-img"
+            mode="scaleToFill"></image>
+          <view class="tui-category-name">{{item.nav_name}}</view>
+        </navigator>
+      </view>
+    </view> -->
 
     <!-- 	 <view class="tui-product-box tui-pb-20 tui-bg-white">
 			<view class="tui-group-name" @tap="more">
@@ -119,127 +134,44 @@
     <!-- #endif -->
 
     <view class="tui-product-box tui-pb-20 tui-bg-white">
-      <view class="tui-group-name">
-        <text>新品推荐</text>
-      </view>
-      <view class="tui-new-box">
+      <view class="tui-new-box "
+        v-if="slist.length">
         <view class="tui-new-item"
           :class="[index!=0 && index!=1 ?'tui-new-mtop':'']"
-          v-for="(item,index) in newProduct"
+          v-for="(item,index) in slist"
           :key="index"
-          @tap="detail(item.goods_id)">
-          <!-- <img src="@/imgs/6.jpg" class="tui-new-label" /> -->
+          @tap="detail(item.goods.goods_id)">
+          <!-- <img src="@/imgs/6.jpg"
+              class="tui-new-label" /> -->
           <view class="tui-title-box">
-            <view class="tui-new-title">{{item.goods_name}}</view>
+            <view class="tui-new-title">{{item.pt.name}}</view>
             <view class="tui-new-price">
-              <text class="tui-new-present">￥{{item.price}}</text>
-              <!-- <text class="tui-new-original">￥{{item.market_price}}</text> -->
+              <text class="tui-new-present">截止：{{item.pt.end_time}}</text>
             </view>
           </view>
-          <img :src="getimg+item.imgs"
+          <img :src="getimg+item.goods.imgs"
             class="tui-new-img2" />
         </view>
-
       </view>
-
+      <None v-else></None>
     </view>
 
-    <view class="tui-product-box">
-      <view class="tui-group-name">
-        <text>热门推荐</text>
-      </view>
-      <view class="tui-product-list">
-        <view class="tui-product-container">
-          <block v-for="(item,index) in productList"
-            :key="index"
-            v-if="(index+1)%2!=0">
-            <!--商品列表-->
-            <view class="tui-pro-item"
-              @tap="detail(item.goods_id)">
-              <view class='pic'>
-                <image :src="getimg+item.imgs"
-                  class="tui-pro-img"
-                  style="height: 46vw;width: 46vw;" />
-                <view v-if="item.stock==0">
-                  <view class='cont-img'> </view>
-                  <view class='maiguang'>
-                    <img src='@/imgs/x.png'></img>
-                  </view>
-                </view>
-              </view>
-              <view class="tui-pro-content">
-                <view class="tui-pro-tit">{{item.goods_name}}</view>
-                <view>
-                  <view class="tui-pro-price">
-                    <text class="tui-sale-price"
-                      v-if="is_vip">vip{{item.price}}</text>
-                    <text class="tui-sale-price"
-                      v-else>￥{{item.price}}</text>
-                    <text class="tui-factory-price"
-                      v-if="is_vip">￥{{item.market_price}}</text>
-                    <xianshi v-if="item.discount && item.discount.reduce_price"
-                      title="限时"
-                      :price="item.price-item.discount.reduce_price*1"></xianshi>
-                    <xianshi v-if="item.pt && item.pt.price"
-                      title="拼团"
-                      :price="(item.price*100-item.pt.price*100)/100"></xianshi>
-                  </view>
-                  <!-- <view class="tui-pro-pay">{{item.sales}}人付款</view> -->
-                </view>
-              </view>
-            </view>
-            <!--商品列表-->
-            <!-- <template is="productItem" data="{{item,index:index}}" /> -->
-          </block>
-        </view>
-        <view class="tui-product-container">
-          <block v-for="(item,index) in productList"
-            :key="index"
-            v-if="(index+1)%2==0">
-            <!--商品列表-->
-            <view class="tui-pro-item"
-              hover-class="hover"
-              :hover-start-time="150"
-              @tap="detail(item.goods_id)">
-
-              <view class='pic'>
-                <image :src="getimg+item.imgs"
-                  class="tui-pro-img"
-                  style="height: 46vw;width: 46vw;" />
-                <view v-if="item.stock==0">
-                  <view class='cont-img'> </view>
-                  <view class='maiguang'>
-                    <img src='@/imgs/x.png'></img>
-                  </view>
-                </view>
-              </view>
-              <view class="tui-pro-content">
-                <view class="tui-pro-tit">{{item.goods_name}}</view>
-                <view>
-                  <view class="tui-pro-price">
-                    <text class="tui-sale-price"
-                      v-if="is_vip">vip {{item.price}}</text>
-                    <text class="tui-sale-price"
-                      v-else>￥{{item.price}}</text>
-                    <text class="tui-factory-price"
-                      v-if="is_vip">￥{{item.market_price}}</text>
-                    <xianshi v-if="item.discount.reduce_price"
-                      title="限时"
-                      :price="item.price-item.discount.reduce_price*1"></xianshi>
-                    <xianshi v-if="item.pt.price"
-                      title="拼团"
-                      :price="item.price-item.pt.price*1"></xianshi>
-                  </view>
-                  <!-- <view class="tui-pro-pay">{{item.sales}}人付款</view> -->
-                </view>
-              </view>
-            </view>
-            <!--商品列表-->
-            <!-- <template is="productItem" data="{{item,index:index}}" /> -->
-          </block>
-        </view>
+    <!-- <view class="tui-product-box tui-pb-20 tui-bg-white">
+      <!-- <view class="tui-group-name">
+        <text>商品分类</text>
+      </view> -->
+    <!-- <view class="t-list"
+      v-if="slist.length">
+      <view v-for="item in slist"
+        :key="item.goods.goods_id"
+        @click="navToList(item.category_id)"
+        class="t-item">
+        <image :src="getimg+item.goods.imgs"></image>
+        <text>{{item.pt.name}}</text>
       </view>
     </view>
+    <None v-else></None>
+  </view>  -->
 
     <!--加载loadding-->
     <tui-loadmore :visible="loadding"
@@ -261,12 +193,14 @@ import Check from '@/common/check.js'
 import Xieyi from "@/components/qy/xieyi"
 import tuiIcon from "@/components/icon/icon"
 import Coupon from "@/components/qy/Coupon"
+import None from "@/components/qy/none"
 import tuiTag from "@/components/tag/tag"
 import tuiLoadmore from "@/components/loadmore/loadmore"
 import tuiNomore from "@/components/nomore/nomore"
 import Cache from "@/common/cache.js"
 import xianshi from "@/components/qy/xianshi"
 import productModel from '@/model/product.js'
+import categoryModel from '@/model/category.js'
 export default {
   components: {
     tuiIcon,
@@ -276,7 +210,8 @@ export default {
     Coupon,
     xianshi,
     Xieyi,
-    uniNoticeBar
+    uniNoticeBar,
+    None
   },
   data () {
     return {
@@ -289,34 +224,19 @@ export default {
       is_vip: 0,
       getimg: this.$getimg,
       current: 0,
-      tabbar: [{
-        icon: "home",
-        text: "首页",
-        size: 21
-      }, {
-        icon: "category",
-        text: "分类",
-        size: 24
-      }, {
-        icon: "cart",
-        text: "购物车",
-        size: 22
-      }, {
-        icon: "people",
-        text: "我的",
-        size: 24
-      }],
+      flist: [],
+      listAll: [],//ALL
+      ptActivity: [],//2
       hotSearch: [],
       banner: [],
       category: [],
-      newProduct: [],
-      productList: [],
-
+      currentId: 1,
       pageIndex: 1,
       loadding: false,
       pullUpOn: true,
       switch_list: '',
-      fx_switch: false
+      fx_switch: false,
+      currentCategory: 0
     }
   },
   onLoad (options) {
@@ -328,28 +248,20 @@ export default {
 
     this.check_switch()
     this._load()
-    // this.laoddata()
-    // let time = Date.parse(new Date()) / 1000 //当前时间
-
-    // const cache = uni.getStorageSync('home'); //抓取缓存
-    // if (!cache || this._CheckCacheTime(cache.cache_time, 0.2)) { //判断缓存是否存在
-    // 	this._load()
-    // } else {        cue shizdyoudiannan let cache = uni.getstorege a happy journey
-    // 	this.category = cache.data[0].data
-    // 	this.newProduct = cache.data[1].data
-    // 	this.productList = cache.data[2].data
-    // 	this.banner = cache.data[3].data
-
-    // }
+  },
+  computed: {
+    slist () {
+      return this.ptActivity.filter(item => {
+        if (item.category_id === this.currentId) {
+          return true
+        }
+        return false
+      })
+    }
   },
   methods: {
-    check () {
-
-    },
     async prmSwitch () {
-      this.sys_switch = await this.promise_switch.then(res => {
-        return res
-      })
+      this.sys_switch = await this.promise_switch.then(res => (res))
       this.switch_list = this.sys_switch
     },
     async check_switch () {
@@ -394,7 +306,6 @@ export default {
       })
 
     },
-
     close_add () {
       this.coupon = false
     },
@@ -427,24 +338,26 @@ export default {
         this.hotSearch = res.data.slice(0, 3)
         uni.setStorageSync('hotSearch', this.resou)
       })
-      let a = productModel.getProductHotRecent()
-      // let a = this.$api.http.get('product/get_recent', {
-      // 	type: 'hot'
-      // }) //热门推荐
-      let b = productModel.getProductNewRecent()
-      // let b = this.$api.http.get('product/get_recent', {
-      // 	type: 'new'
-      // }) //新品推荐
+      let a = this.$api.http.get('pt/get_pt_search', { name: '' })
       let c = this.$api.http.get('nav/user_getNav') //导航
-      // let d = this.$api.http.get('banner/get_banner?id=1') //轮播图
       let d = this.$api.http.get('banner/banner_all_item') //轮播图
-
-      Promise.all([a, b, c, d]).then(res => {
-        this.productList = res[0].data
-        this.newProduct = res[1].data
-        this.category = res[2].data
-        this.banner = res[3].data
+      let e = categoryModel.getCategoryAll()
+      Promise.all([a, c, d, e]).then(res => {
+        this.ptActivity = res[0].data
+        this.category = res[1].data
+        this.banner = res[2].data
+        let list = res[3].data
+        this.listAll = list
+        this.flist = list.filter(item => !item.pid)
+        if (list.length) {
+          this.currentId = this.flist[0].category_id
+        }
       })
+    },
+    tabtap (item, index) {
+      this.currentCategory = index
+      console.log('点击的分类：', item.category_id)
+      this.currentId = item.category_id
     },
     _CheckCacheTime (times, xs = 5) {
       const time = Date.parse(new Date()) / 1000 //当前时间
@@ -497,7 +410,14 @@ export default {
       uni.navigateTo({
         url: '../extend-view/productList/productList?key=' + item
       })
-    }
+    },
+    navToList (sid) {
+      const cid = this.currentId
+      uni.navigateTo({
+        url: '/pages/extend-view/productDetail/productDetail?id=' + sid
+        // url: `/pages/extend-view/productList/productList?cid=${cid}&sid=${sid}`
+      })
+    },
   },
   onPullDownRefresh () {
     this._load()
@@ -705,7 +625,7 @@ page {
 
 .tui-banner-bg {
   display: flex;
-  height: 310rpx;
+  height: 340rpx;
   background: #fb586a;
   position: relative;
 }
@@ -739,6 +659,23 @@ page {
   left: 0;
 }
 
+.tui-category-swiper {
+  width: 100%;
+  height: 60rpx;
+}
+
+.tui-category-name1 {
+  height: 100%;
+  color: #fff;
+  line-height: 60rpx !important;
+  width: max-content;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+.tui-category-swiper .uni-swiper-slide-frame {
+  width: 20%;
+}
 .tui-banner-swiper {
   width: 100%;
   height: 240rpx;
@@ -853,6 +790,7 @@ page {
 
 .tui-bg-white {
   background: #fff;
+  margin-top: 56px;
 }
 
 .tui-group-name {
@@ -1068,10 +1006,59 @@ page {
   color: #a0a0a0;
   padding-left: 12rpx;
 }
+.tui-category-box {
+  height: 30px !important;
+  .categoryActive {
+    color: yellow;
+    font-size: 12px;
+  }
+  .uni-scroll-view {
+    height: 30px !important;
+  }
+  .uni-scroll-view-content {
+    height: 30px !important;
+  }
+}
 
+::-webkit-scrollbar {
+  display: none;
+}
 .tui-pro-pay {
   padding-top: 10rpx;
   font-size: 24rpx;
   color: #656565;
+}
+.s-list {
+  width: 100%;
+  background: #fff;
+}
+.t-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  background: #fff;
+  padding-top: 12upx;
+
+  &:after {
+    content: '';
+    flex: 99;
+    height: 0;
+  }
+}
+.t-item {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 176upx;
+  font-size: 26upx;
+  color: #666;
+  padding-bottom: 20upx;
+
+  image {
+    width: 140upx;
+    height: 140upx;
+  }
 }
 </style>

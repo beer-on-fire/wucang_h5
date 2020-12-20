@@ -228,7 +228,7 @@ export default {
         text: "分类",
         size: 24
       }, {
-        icon: "cart",
+        icon: "icon-shoucang",
         text: "购物车",
         size: 22
       }, {

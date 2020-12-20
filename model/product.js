@@ -46,7 +46,7 @@ function getProduct(index) {
       return res
     })
 }
-// 拼团相关
+// 拼购相关
 function getPtItem(index) {
   let url = 'pt/get_item'
   return http

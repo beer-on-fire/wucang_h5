@@ -13,7 +13,6 @@
             <template v-else>
               <view class="tui-amount tui-bold">￥{{price}}</view>
             </template>
-
             <view class="tui-number"><text v-if="list.sku_name">{{list.sku_name}}</text> <text>库存：{{list.stock}}</text>
             </view>
           </view>
@@ -58,12 +57,12 @@
               @click="sure('is_bottom_click')">确定</tui-button>
           </block>
           <block v-else>
-            <tui-button type="danger"
+            <!-- <tui-button type="danger"
               tui-button-class="tui-btn-equals"
               shape="circle"
               size="mini"
               class="tui-flex-1"
-              @click="sure('car')">加入购物车</tui-button>
+              @click="sure('car')">加入购物车</tui-button> -->
             <tui-button type="warning"
               tui-button-class="tui-btn-equals"
               shape="circle"
