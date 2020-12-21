@@ -140,13 +140,13 @@
           :class="[index!=0 && index!=1 ?'tui-new-mtop':'']"
           v-for="(item,index) in slist"
           :key="index"
-          @tap="detail(item.goods.goods_id)">
+          @tap="detail(item.goods.goods_id,item.pt_id)">
           <!-- <img src="@/imgs/6.jpg"
               class="tui-new-label" /> -->
           <view class="tui-title-box">
             <view class="tui-new-title">{{item.pt.name}}</view>
             <view class="tui-new-price">
-              <text class="tui-new-present">截止：{{item.pt.end_time}}</text>
+              <text class="tui-new-present">￥{{item.goods.price}}</text>
             </view>
           </view>
           <img :src="getimg+item.goods.imgs"
@@ -364,8 +364,8 @@ export default {
       const end_time = times + 60 * xs
       return time > end_time ? true : false
     },
-    detail: function (id) {
-      let url = '/pages/extend-view/productDetail/productDetail?id=' + id
+    detail: function (id, pt_id) {
+      let url = `/pages/extend-view/productDetail/productDetail?id=${id}&pt_id=${pt_id}`
       // #ifdef H5
       let my = uni.getStorageSync('my')
       if (my && my.data && my.data.sfm) {

@@ -10,14 +10,14 @@
             v-else>
             <view class="des">
               <view class="des_1"
-                @click="jump_toporduct(item.fav_id)">
+                @click="jump_toporduct(item.goods_id)">
                 <img :src="getimg + item.imgs" />
               </view>
               <view class="des_2">
                 <view class="msg">
-                  <view class="name">{{item.product.goods_name}}</view>
-                  <view class="int">{{item.int}}</view>
-                  <view class="price">¥{{item.price}}</view>
+                  <view class="name">{{item.pt?item.pt.name:''}}</view>
+                  <!-- <view class="int">{{item.int}}</view> -->
+                  <view class="price">截止：{{item.pt?item.pt.end_time :''}}</view>
                 </view>
                 <view class="btn1">
                   <view class="btn"
@@ -68,14 +68,13 @@ export default {
   methods: {
     _load () {
       // 这里修改收藏列表
-      this.$api.http.get('favorite/get_all_fav').then(res => {
-        // this.likeList = res.data.goods
-        if (!res.data.goods) {
+      this.$api.http.get('favorite/pt/get_all_fav').then(res => {
+        console.log('收藏列表：', res.data)
+        if (!res.data) {
           this.list_empty = true
         } else {
-          this.likeList = res.data.goods
+          this.likeList = res.data
         }
-        console.log(this.likeList)
       })
     },
     del (id) {
@@ -86,12 +85,12 @@ export default {
         content: '确定取消？',
         success: function (res) {
           if (res.confirm) {
-            that.$api.http.put('/favorite/del_fav', {
-              id: id
+            that.$api.http.post('favorite/pt/del_pt', {
+              id: this.id,
+              pt_id: this.id,
             }).then(res => {
               that.$api.msg('取消成功')
               that._load()
-
             })
             console.log('用户点击确定')
           } else if (res.cancel) {
@@ -114,7 +113,6 @@ export default {
     }
   },
   onPullDownRefresh () {
-    console.log('refresh')
     this._load()
     setTimeout(function () {
       uni.stopPullDownRefresh()

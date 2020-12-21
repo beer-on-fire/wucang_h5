@@ -517,6 +517,7 @@ export default {
       popupShow: false,
       goods_num: 1,
       id: '',
+      pt_id: '',
       zk_price: '',
       list: {},
       applist: [],
@@ -547,8 +548,11 @@ export default {
     if (options.id) {
       this.id = options.id
     }
+    if (options.pt_id) {
+      this.pt_id = options.pt_id
+    }
     // #ifdef MP-WEIXIN
-    this.is_like(options.id)
+    this.is_like(options.pt_id)
     // #endif
     if (options.sfm) {
       uni.setStorageSync('level_one', options.sfm) //上级分销的身份码
@@ -670,9 +674,6 @@ export default {
       return
     },
   },
-  created () {
-    this.initJSsdk()
-  },
   methods: {
     async prmSwitch () {
       this.sys_switch = await this.promise_switch.then(res => {
@@ -688,41 +689,6 @@ export default {
       this.get_code()
       this.h5_share = true
       this.$refs.c1.erweima()
-    },
-    initJSsdk () {
-      this.$api.http.get('接口', res => {
-        const data = res.data.Data
-        if (res.data.RequestMsg === 'OK') {
-          jweixin.config({
-            debug: false, // 可以true  调试时候用 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。  
-            appId: data.appId, // 必填，公众号的唯一标识  
-            timestamp: data.timestamp, // 必填，生成签名的时间戳  
-            nonceStr: data.nonceStr, // 必填，生成签名的随机串  
-            signature: data.signature, // 必填，签名，见附录1  
-            // surl: surl,   //自己添加的，debug为true的时候可以网页打印出对应的URL是否正确  
-            jsApiList: ["updateAppMessageShareData", "updateTimelineShareData"]
-          })
-        }
-      })
-    },
-    wechatShare () {
-      var surl = encodeURIComponent(window.location.href.split('#')[0])
-      jweixin.ready(function () {
-        var shareData = {
-          title: this.list.goods_name, // 分享标题  
-          desc: this.list.Background, // 分享描述  
-          link: surl, // 分享链接  
-          imgUrl: this.list.Image_s, // 分享图标                                
-          success: () => {
-            // 用户确认分享后执行的回调函数  
-          },
-          cancel: () => {
-            // 用户取消分享后执行的回调函数  
-          }
-        }
-        jweixin.updateAppMessageShareData(shareData)
-        jweixin.updateTimelineShareData(shareData)
-      })
     },
     //小程序分享海报
     share_func () {
@@ -985,8 +951,6 @@ export default {
       return obj
     },
     is_like (id) {
-      // this.$api.http.post('favorite/get_one_fav', {
-      // 	id: id
       productModel.postIsLike(id).then(res => {
         if (!res.data) {
           this.collected = false
@@ -1296,21 +1260,22 @@ export default {
       if (!Check.a()) return
       if (this.collected) {
         // 这里修改取消收藏
-        this.$api.http.put('favorite/del_fav', {
-          id: this.id
+        this.$api.http.post('favorite/pt/del_pt', {
+          id: this.id,
+          pt_id: this.pt_id,
         }).then(res => {
-          // productModel.putDelFavorite(this.id).then(res=>{
           this.$api.msg('取消收藏')
         })
       } else {
         let data = {
           fav_id: this.id,
+          pt_id: this.pt_id,
+          goods_id: this.id,
           type: 'goods',
           price: this.list.price,
         }
         // 这里修改添加收藏
-        this.$api.http.post('favorite/add_fav', data).then(res => {
-          // productModel.postAddFavorite(data).then(res=>{
+        this.$api.http.post('favorite/pt/add_pt', data).then(res => {
           this.$api.msg('收藏成功')
         })
       }

@@ -184,12 +184,10 @@ export default {
     //console.log(data);
   },
   onShow () {
-
     this.get_my_order()
   },
   methods: {
     jump_wuliu (id) {
-      console.log(id)
       uni.navigateTo({
         url: './drive/drive?id=' + id
       })
@@ -225,7 +223,6 @@ export default {
         }
         this.price = a.toFixed(2) * 1
         uni.setStorageSync('price', this.price)
-        console.log(this.price)
       })
     },
 

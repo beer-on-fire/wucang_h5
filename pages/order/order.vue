@@ -20,7 +20,7 @@
         <scroll-view class="list-scroll-content"
           scroll-y>
           <!-- 空白页 -->
-          <empty v-if="tabItem.loaded === true && tabItem.orderList.length === 0"></empty>
+          <!-- <empty v-if="tabItem.loaded === true && tabItem.orderList.length === 0"></empty> -->
           <None v-if="list_empty"></None>
           <!-- 订单列表 -->
           <view v-else>
@@ -146,7 +146,11 @@ export default {
     }
   },
   onShow () {
+    let pages = getCurrentPages()
+    let currentPage = pages[pages.length - 1]
     this.get_order()
+    this.tabCurrentIndex = +currentPage.options.state || 0
+    this.tabClick(this.tabCurrentIndex)
   },
   onLoad (options) {
     this.get_order()
@@ -196,7 +200,7 @@ export default {
       }
       const that = this
       orderModel.postOrderAll().then(res => {
-        if (res.data == '') {
+        if (!res.data) {
           this.list_empty = true
         } else {
           for (let k in res.data) {
@@ -344,7 +348,6 @@ export default {
     },
     //顶部tab点击
     tabClick (index) {
-      console.log(index)
       this.tabCurrentIndex = index
       if (index == 1) {
         this.now_pay = 0
@@ -431,7 +434,7 @@ export default {
     setTimeout(function () {
       uni.stopPullDownRefresh()
     }, 2000)
-  }
+  },
 }
 </script>
 
