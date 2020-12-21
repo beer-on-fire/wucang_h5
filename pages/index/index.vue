@@ -1,6 +1,5 @@
 <template>
-  <view class="container"
-    style="background:#fff;">
+  <view class="container">
 
     <!--header-->
     <view class="tui-header">
@@ -68,15 +67,18 @@
         <!--banner-->
         <view class="tui-banner-box">
           <view class="tui-category-box">
-            <scroll-view scroll-x>
-              <view style="white-space:nowrap;display: flex;margin-right:10px;">
-                <view :class="{'tui-category-name1':true,'categoryActive':index === currentCategory}"
-                  v-for="(item,index) in flist"
-                  :key="index"
-                  @click="tabtap(item,index)">{{item.category_name}}</view>
-              </view>
-            </scroll-view>
-
+            <swiper :indicator-dots="false"
+              :autoplay="true"
+              :interval="3000"
+              :circular="false"
+              :display-multiple-items="4"
+              class="tui-category-swiper">
+              <swiper-item v-for="(item,index) in flist"
+                :key="index"
+                @click="tabtap(item)">
+                <view class="tui-category-name1">{{item.category_name}}</view>
+              </swiper-item>
+            </swiper>
           </view>
           <swiper :indicator-dots="true"
             :autoplay="true"
@@ -134,44 +136,21 @@
     <!-- #endif -->
 
     <view class="tui-product-box tui-pb-20 tui-bg-white">
-      <view class="tui-new-box "
+      <view class="tui-group-name">
+        <text>商品分类</text>
+      </view>
+      <view class="t-list"
         v-if="slist.length">
-        <view class="tui-new-item"
-          :class="[index!=0 && index!=1 ?'tui-new-mtop':'']"
-          v-for="(item,index) in slist"
-          :key="index"
-          @tap="detail(item.goods.goods_id)">
-          <!-- <img src="@/imgs/6.jpg"
-              class="tui-new-label" /> -->
-          <view class="tui-title-box">
-            <view class="tui-new-title">{{item.pt.name}}</view>
-            <view class="tui-new-price">
-              <text class="tui-new-present">截止：{{item.pt.end_time}}</text>
-            </view>
-          </view>
-          <img :src="getimg+item.goods.imgs"
-            class="tui-new-img2" />
+        <view v-for="item in slist"
+          :key="item.category_id"
+          @click="navToList(item.category_id)"
+          class="t-item">
+          <image :src="getimg+item.imgs"></image>
+          <text>{{item.category_name}}</text>
         </view>
       </view>
       <None v-else></None>
     </view>
-
-    <!-- <view class="tui-product-box tui-pb-20 tui-bg-white">
-      <!-- <view class="tui-group-name">
-        <text>商品分类</text>
-      </view> -->
-    <!-- <view class="t-list"
-      v-if="slist.length">
-      <view v-for="item in slist"
-        :key="item.goods.goods_id"
-        @click="navToList(item.category_id)"
-        class="t-item">
-        <image :src="getimg+item.goods.imgs"></image>
-        <text>{{item.pt.name}}</text>
-      </view>
-    </view>
-    <None v-else></None>
-  </view>  -->
 
     <!--加载loadding-->
     <tui-loadmore :visible="loadding"
@@ -226,17 +205,17 @@ export default {
       current: 0,
       flist: [],
       listAll: [],//ALL
-      ptActivity: [],//2
+      listAlls: [],//2
       hotSearch: [],
       banner: [],
       category: [],
       currentId: 1,
+      currentName: '',
       pageIndex: 1,
       loadding: false,
       pullUpOn: true,
       switch_list: '',
-      fx_switch: false,
-      currentCategory: 0
+      fx_switch: false
     }
   },
   onLoad (options) {
@@ -251,8 +230,8 @@ export default {
   },
   computed: {
     slist () {
-      return this.ptActivity.filter(item => {
-        if (item.category_id === this.currentId) {
+      return this.listAlls.filter(item => {
+        if (item.pid && item.pid === this.currentId) {
           return true
         }
         return false
@@ -338,25 +317,25 @@ export default {
         this.hotSearch = res.data.slice(0, 3)
         uni.setStorageSync('hotSearch', this.resou)
       })
-      let a = this.$api.http.get('pt/get_pt_search', { name: '' })
       let c = this.$api.http.get('nav/user_getNav') //导航
       let d = this.$api.http.get('banner/banner_all_item') //轮播图
       let e = categoryModel.getCategoryAll()
-      Promise.all([a, c, d, e]).then(res => {
-        this.ptActivity = res[0].data
-        this.category = res[1].data
-        this.banner = res[2].data
-        let list = res[3].data
+      Promise.all([c, d, e]).then(res => {
+        this.category = res[0].data
+        this.banner = res[1].data
+        let list = res[2].data
         this.listAll = list
         this.flist = list.filter(item => !item.pid)
+        this.listAlls = list.filter(item => item.pid)
         if (list.length) {
-          this.currentId = this.flist[0].category_id
+          this.currentName = list[0].category_name
+          this.currentId = list[0].category_id
         }
       })
     },
-    tabtap (item, index) {
-      this.currentCategory = index
+    tabtap (item) {
       console.log('点击的分类：', item.category_id)
+      this.currentName = item.category_name
       this.currentId = item.category_id
     },
     _CheckCacheTime (times, xs = 5) {
@@ -414,8 +393,7 @@ export default {
     navToList (sid) {
       const cid = this.currentId
       uni.navigateTo({
-        url: '/pages/extend-view/productDetail/productDetail?id=' + sid
-        // url: `/pages/extend-view/productList/productList?cid=${cid}&sid=${sid}`
+        url: `/pages/extend-view/productList/productList?cid=${cid}&sid=${sid}`
       })
     },
   },
@@ -669,8 +647,6 @@ page {
   color: #fff;
   line-height: 60rpx !important;
   width: max-content;
-  margin-right: 10px;
-  font-size: 12px;
 }
 
 .tui-category-swiper .uni-swiper-slide-frame {
@@ -790,7 +766,6 @@ page {
 
 .tui-bg-white {
   background: #fff;
-  margin-top: 56px;
 }
 
 .tui-group-name {
@@ -1006,23 +981,7 @@ page {
   color: #a0a0a0;
   padding-left: 12rpx;
 }
-.tui-category-box {
-  height: 30px !important;
-  .categoryActive {
-    color: yellow;
-    font-size: 12px;
-  }
-  .uni-scroll-view {
-    height: 30px !important;
-  }
-  .uni-scroll-view-content {
-    height: 30px !important;
-  }
-}
 
-::-webkit-scrollbar {
-  display: none;
-}
 .tui-pro-pay {
   padding-top: 10rpx;
   font-size: 24rpx;

@@ -146,16 +146,16 @@
             iconColor="#5fcda2"
             title="地址管理"></list-cell>
         </view>
-        <!-- <view @click="jump_tolike">
+        <view @click="jump_tolike">
           <list-cell icon="icon-shoucang"
             iconColor="#DF2073"
             title="我的收藏"></list-cell>
-        </view> -->
-        <!-- <view @click="jump_tomycoupon">
+        </view>
+        <view @click="jump_tomycoupon">
           <list-cell icon="icon-tuijian"
             iconColor="#54b4ef"
             title="我的红包"></list-cell>
-        </view> -->
+        </view>
         <!-- 演示 -->
         <view @click="jump_tocms"
           v-if="userinfo.web_auth==1">

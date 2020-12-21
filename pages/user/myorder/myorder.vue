@@ -64,7 +64,7 @@
           <view class="ptcg_l">恭喜您拼购成功</view>
         </block>
         <block v-if="my_order.payment_state == 1 && my_order.pt_state == 2">
-          <view class="ptcg_l">[拼购成功]恭喜您拼购成功</view>
+          <view class="ptcg_l">[拼团成功]恭喜您拼购成功</view>
         </block>
 
         <view class="ptcg_r">

@@ -104,7 +104,7 @@ export default {
   },
   methods: {
     del () {
-      this.$api.http.get('address/del_address', { id: this.del_id }).then(res => {
+      this.$api.http.put('address/del_address', { id: this.del_id }).then(res => {
         this.$api.msg('删除成功')
         setTimeout(() => {
           uni.navigateBack()

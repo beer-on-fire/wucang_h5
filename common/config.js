@@ -1,2 +1,4 @@
-const Api_url = 'https://api.wumall.vip/'
-export { Api_url }
+const Api_url='http://pin.xwszgs.com/'   
+export {
+	Api_url
+}

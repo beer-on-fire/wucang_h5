@@ -1,118 +1,127 @@
 <template>
-  <view class="container"
-    style="height:100vh">
-    <scroll-view scroll-y
-      style="height:100vh;padding-bottom: 100px;">
-      <view class="tui-product-box tui-pb-20 tui-bg-white">
-        <view class="tui-group-name">
-          <text>新品拼购</text>
-        </view>
-        <view class="tui-new-box">
-          <view class="tui-new-item"
-            :class="[index!=0 && index!=1 ?'tui-new-mtop':'']"
-            v-for="(item,index) in newProduct"
-            :key="index"
-            @tap="detail(item.goods.goods_id)">
-            <!-- <img src="@/imgs/6.jpg"
-              class="tui-new-label" /> -->
-            <view class="tui-title-box">
-              <view class="tui-new-title">{{item.pt.name}}</view>
-              <view class="tui-new-price">
-                <text class="tui-new-present">截止：{{item.pt.end_time}}</text>
-              </view>
+  <view class="container">
+    <view class="tui-product-box tui-pb-20 tui-bg-white">
+      <view class="tui-group-name">
+        <text>新品推荐</text>
+      </view>
+      <view class="tui-new-box">
+        <view class="tui-new-item"
+          :class="[index!=0 && index!=1 ?'tui-new-mtop':'']"
+          v-for="(item,index) in newProduct"
+          :key="index"
+          @tap="detail(item.goods_id)">
+          <img src="@/imgs/6.jpg"
+            class="tui-new-label" />
+          <view class="tui-title-box">
+            <view class="tui-new-title">{{item.goods_name}}</view>
+            <view class="tui-new-price">
+              <text class="tui-new-present">￥{{item.price}}</text>
+              <text class="tui-new-original">￥{{item.market_price}}</text>
             </view>
-            <img :src="getimg+item.goods.imgs"
-              class="tui-new-img2" />
           </view>
+          <img :src="getimg+item.imgs"
+            class="tui-new-img2" />
         </view>
       </view>
+    </view>
 
-      <!-- <view class="tui-product-box">
-        <view class="tui-product-list">
-          <view class="tui-product-container">
-            <block v-for="(item,index) in productList"
-              :key="index"
-              v-if="(index+1)%2!=0">
-              <view class="tui-pro-item"
-                @tap="detail(item.goods_id)">
-                <view class='pic'>
-                  <image :src="getimg+item.imgs"
-                    class="tui-pro-img"
-                    style="height: 46vw;width: 46vw;" />
-                  <view v-if="item.stock==0">
-                    <view class='cont-img'> </view>
-                    <view class='maiguang'>
-                      <img src='@/imgs/x.png'></img>
-                    </view>
-                  </view>
-                </view>
-                <view class="tui-pro-content">
-                  <view class="tui-pro-tit">{{item.goods_name}}</view>
-                  <view>
-                    <view class="tui-pro-price">
-                      <text class="tui-sale-price"
-                        v-if="is_vip">vip{{item.price}}</text>
-                      <text class="tui-sale-price"
-                        v-else>￥{{item.price}}</text>
-                      <text class="tui-factory-price"
-                        v-if="is_vip">￥{{item.market_price}}</text>
-                      <xianshi v-if="item.discount && item.discount.reduce_price"
-                        title="限时"
-                        :price="item.price-item.discount.reduce_price*1"></xianshi>
-                      <xianshi v-if="item.pt && item.pt.price"
-                        title="拼购"
-                        :price="(item.price*100-item.pt.price*100)/100"></xianshi>
-                    </view>
+    <view class="tui-product-box">
+      <view class="tui-group-name">
+        <text>热门推荐</text>
+      </view>
+      <view class="tui-product-list">
+        <view class="tui-product-container">
+          <block v-for="(item,index) in productList"
+            :key="index"
+            v-if="(index+1)%2!=0">
+            <!--商品列表-->
+            <view class="tui-pro-item"
+              @tap="detail(item.goods_id)">
+              <view class='pic'>
+                <image :src="getimg+item.imgs"
+                  class="tui-pro-img"
+                  style="height: 46vw;width: 46vw;" />
+                <view v-if="item.stock==0">
+                  <view class='cont-img'> </view>
+                  <view class='maiguang'>
+                    <img src='@/imgs/x.png'></img>
                   </view>
                 </view>
               </view>
-            </block>
-          </view>
-          <view class="tui-product-container">
-            <block v-for="(item,index) in productList"
-              :key="index"
-              v-if="(index+1)%2==0">
-              <view class="tui-pro-item"
-                hover-class="hover"
-                :hover-start-time="150"
-                @tap="detail(item.goods_id)">
-
-                <view class='pic'>
-                  <image :src="getimg+item.imgs"
-                    class="tui-pro-img"
-                    style="height: 46vw;width: 46vw;" />
-                  <view v-if="item.stock==0">
-                    <view class='cont-img'> </view>
-                    <view class='maiguang'>
-                      <img src='@/imgs/x.png'></img>
-                    </view>
+              <view class="tui-pro-content">
+                <view class="tui-pro-tit">{{item.goods_name}}</view>
+                <view>
+                  <view class="tui-pro-price">
+                    <text class="tui-sale-price"
+                      v-if="is_vip">vip{{item.price}}</text>
+                    <text class="tui-sale-price"
+                      v-else>￥{{item.price}}</text>
+                    <text class="tui-factory-price"
+                      v-if="is_vip">￥{{item.market_price}}</text>
+                    <xianshi v-if="item.discount && item.discount.reduce_price"
+                      title="限时"
+                      :price="item.price-item.discount.reduce_price*1"></xianshi>
+                    <xianshi v-if="item.pt && item.pt.price"
+                      title="拼团"
+                      :price="(item.price*100-item.pt.price*100)/100"></xianshi>
                   </view>
-                </view>
-                <view class="tui-pro-content">
-                  <view class="tui-pro-tit">{{item.goods_name}}</view>
-                  <view>
-                    <view class="tui-pro-price">
-                      <text class="tui-sale-price"
-                        v-if="is_vip">vip {{item.price}}</text>
-                      <text class="tui-sale-price"
-                        v-else>￥{{item.price}}</text>
-                      <text class="tui-factory-price"
-                        v-if="is_vip">￥{{item.market_price}}</text>
-                      <xianshi v-if="item.discount.reduce_price"
-                        title="限时"
-                        :price="item.price-item.discount.reduce_price*1"></xianshi>
-                      <xianshi v-if="item.pt.price"
-                        title="拼购"
-                        :price="item.price-item.pt.price*1"></xianshi>
-                    </view>
-                  </view>
+                  <!-- <view class="tui-pro-pay">{{item.sales}}人付款</view> -->
                 </view>
               </view>
-            </block>
-          </view>
+            </view>
+            <!--商品列表-->
+            <!-- <template is="productItem" data="{{item,index:index}}" /> -->
+          </block>
         </view>
-      </view> -->
-    </scroll-view>
+        <view class="tui-product-container">
+          <block v-for="(item,index) in productList"
+            :key="index"
+            v-if="(index+1)%2==0">
+            <!--商品列表-->
+            <view class="tui-pro-item"
+              hover-class="hover"
+              :hover-start-time="150"
+              @tap="detail(item.goods_id)">
+
+              <view class='pic'>
+                <image :src="getimg+item.imgs"
+                  class="tui-pro-img"
+                  style="height: 46vw;width: 46vw;" />
+                <view v-if="item.stock==0">
+                  <view class='cont-img'> </view>
+                  <view class='maiguang'>
+                    <img src='@/imgs/x.png'></img>
+                  </view>
+                </view>
+              </view>
+              <view class="tui-pro-content">
+                <view class="tui-pro-tit">{{item.goods_name}}</view>
+                <view>
+                  <view class="tui-pro-price">
+                    <text class="tui-sale-price"
+                      v-if="is_vip">vip {{item.price}}</text>
+                    <text class="tui-sale-price"
+                      v-else>￥{{item.price}}</text>
+                    <text class="tui-factory-price"
+                      v-if="is_vip">￥{{item.market_price}}</text>
+                    <xianshi v-if="item.discount.reduce_price"
+                      title="限时"
+                      :price="item.price-item.discount.reduce_price*1"></xianshi>
+                    <xianshi v-if="item.pt.price"
+                      title="拼团"
+                      :price="item.price-item.pt.price*1"></xianshi>
+                  </view>
+                  <!-- <view class="tui-pro-pay">{{item.sales}}人付款</view> -->
+                </view>
+              </view>
+            </view>
+            <!--商品列表-->
+            <!-- <template is="productItem" data="{{item,index:index}}" /> -->
+          </block>
+        </view>
+      </view>
+    </view>
+
     <!--加载loadding-->
     <tui-loadmore :visible="loadding"
       :index="3"
@@ -156,10 +165,10 @@ export default {
   methods: {
     _load () {
       let a = productModel.getProductHotRecent()
-      let b = this.$api.http.get('pt/get_pt_search', { name: '' })
-      Promise.all([b]).then(res => {
-        // this.productList = res[0].data
-        this.newProduct = res[0].data
+      let b = productModel.getProductNewRecent()
+      Promise.all([a, b]).then(res => {
+        this.productList = res[0].data
+        this.newProduct = res[1].data
       })
     },
     detail: function (id) {
@@ -666,13 +675,13 @@ page {
 }
 
 .tui-pro-item {
-  width: 70vw;
+  width: 100%;
   margin-bottom: 4%;
   background: #fff;
   box-sizing: border-box;
   border-radius: 12rpx;
   overflow: hidden;
-  margin: 0 auto 20px;
+
   .pic {
     position: relative;
 
@@ -705,7 +714,7 @@ page {
 }
 
 .tui-pro-img {
-  width: 70vw !important;
+  width: 320rpx;
   height: 320rpx;
   display: block;
 }
