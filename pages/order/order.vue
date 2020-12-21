@@ -39,10 +39,10 @@
                   class="del-btn yticon icon-iconfontshanchu1"
                   @click="deleteOrder(item.order_id)"></text>
               </view>
-              <scroll-view v-if="item.OrderGoods&&item.OrderGoods.length > 1"
+              <scroll-view v-if="item.order_goods&&item.order_goods.length > 1"
                 class="goods-box"
                 scroll-x>
-                <view v-for="(goodsItem, goodsIndex) in item.OrderGoods"
+                <view v-for="(goodsItem, goodsIndex) in item.order_goods"
                   :key="goodsIndex"
                   class="goods-item"
                   @click="jumo_tomyorder(item.order_id)">
@@ -51,9 +51,9 @@
                     mode="aspectFill"></image>
                 </view>
               </scroll-view>
-              <view v-if="item.OrderGoods&&item.OrderGoods.length === 1"
+              <view v-if="item.order_goods&&item.order_goods.length === 1"
                 class="goods-box-single"
-                v-for="(goodsItem, goodsIndex) in item.OrderGoods"
+                v-for="(goodsItem, goodsIndex) in item.order_goods"
                 :key="goodsIndex">
                 <image class="goods-img"
                   :src="getimg+goodsItem.imgs.url"
@@ -69,7 +69,7 @@
 
               <view class="price-box">
                 共
-                <text class="num">{{item.OrderGoods&&item.OrderGoods.length}}</text>
+                <text class="num">{{item.order_goods&&item.order_goods.length}}</text>
                 件商品 实付款
                 <text class="price">{{item.order_money}}</text>
               </view>
@@ -158,13 +158,13 @@ export default {
      * 修复app端点击除全部订单外的按钮进入时不加载数据的问题
      * 替换onLoad下代码即可
      */
-    this.tabCurrentIndex = +options.state || 0
+    this.tabCurrentIndex = +options.state
     // #ifndef MP
     // this.loadData()
     // #endif
     // #ifdef MP
     // if (options.state == 0) {
-    // this.loadData()
+    // 	this.loadData()
     // }
     // #endif
 

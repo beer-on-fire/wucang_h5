@@ -35,6 +35,7 @@
             controls
             objectFit="fill"
             :poster="getimg+list.banner_imgs_url[0]"></video>
+
         </swiper-item>
         <block v-for="(item,index) in list.banner_imgs_url"
           :key="index">
@@ -70,7 +71,7 @@
       v-if="page_show">
       <view class="tui-product-title tui-border-radius">
 
-        <!-- 邀新拼购 -->
+        <!-- 邀新拼团 -->
         <activity v-if="pro_type == 'new_pt'"
           :pro_type="pro_type"
           :list="list"
@@ -108,7 +109,7 @@
 
         </block>
 
-        <!-- 一般拼购 ↓↓ -->
+        <!-- 一般拼团 ↓↓ -->
         <activity v-if="pro_type == 'pt'"
           :pro_type="pro_type"
           :list="list"
@@ -132,7 +133,7 @@
 
           <!-- 分享按钮 -->
           <!-- #ifdef MP-WEIXIN -->
-          <button @click="share_func"
+          <!-- <button @click="share_func"
             class="tui-share-btn tui-share-position share"
             style="margin-top: -7px;">
             <tui-tag type="gray"
@@ -143,10 +144,10 @@
                 style="color:#999;font-size:15px"></view>
               <text class="tui-share-text tui-gray">分享</text>
             </tui-tag>
-          </button>
+          </button> -->
           <!-- #endif -->
           <!-- #ifdef H5 -->
-          <button @click="new_share_func"
+          <!-- <button @click="new_share_func"
             class="tui-share-btn tui-share-position share"
             style="margin-top: -7px;">
             <tui-tag type="gray"
@@ -157,7 +158,7 @@
                 style="color:#999;font-size:15px"></view>
               <text class="tui-share-text tui-gray">分享</text>
             </tui-tag>
-          </button>
+          </button> -->
           <!-- #endif -->
 
           <!-- 分享按钮 -->
@@ -196,7 +197,7 @@
         </view>
       </view>
 
-      <!-- *****************  拼购  start ***************** -->
+      <!-- *****************  拼团  start ***************** -->
       <view class="pintuan tui-radius-all tui-mtop"
         v-if="is_pt && !is_new_pt && list.pt.pt.is_cou_tuan == 0">
         <view class="pt_top">
@@ -248,7 +249,7 @@
             color='#A0A0A0'></tui-icon>
         </view>
       </view>
-      <!-- *****************  拼购 end ***************** -->
+      <!-- *****************  拼团 end ***************** -->
 
       <!-- *****************评价**************** -->
       <view class="tui-cmt-box tui-mtop tui-radius-all">
@@ -362,7 +363,7 @@
         canvas-id="myCanvas"></canvas><!-- 海报 -->
     </view>
 
-    <!-- 拼购 -->
+    <!-- 拼单 -->
     <view class="tan_pindan"
       v-if="is_pindan">
       <view class="mask"
@@ -435,7 +436,6 @@ import {
 import productModel from "@/model/product.js"
 import Cache from "@/common/cache.js"
 var cache_user = new CUser()
-var jweixin = require('jweixin-module')
 
 export default {
   components: {
@@ -475,8 +475,8 @@ export default {
       remain: [],
       time_list: [],
       pindan: [],
-      is_pt: false, //是否拼购商品
-      is_pindan: false, //是否弹出拼购列表
+      is_pt: false, //是否拼团商品
+      is_pindan: false, //是否弹出拼团列表
       discount_start: 0,
       discount_time: {
         days: '',
@@ -625,10 +625,9 @@ export default {
       if (this.zk_price > 0) {
         result = old - this.zk_price
       }
-      // 拼团有没有优惠
-      // if (this.list.pt && this.list.pt.price > 0) {
-      //   result = old - this.list.pt.price
-      // }
+      if (this.list.pt && this.list.pt.price > 0) {
+        result = old - this.list.pt.price
+      }
       return result.toFixed(2)
     },
     //轮播与视频个数
@@ -725,14 +724,14 @@ export default {
         this.set_discount() //设置限时折扣
       }
 
-      //拼购相关
+      //拼团相关
       if (this.list.pt.price) {
         this.is_pt = true
         // this.$api.http.get('pt/get_item', {
         // 	id: this.id
         // }).then(res => {
         productModel.getPtItem(index).then(ress => {
-          console.log('拼购相关：', ress)
+          console.log('拼团相关：', ress)
           this.pindan = ress.data
           this.get_time(ress.data)
         })
@@ -805,7 +804,7 @@ export default {
 
     //倒计时时间到触发
     timeup (e) {
-      //拼购时间到触发
+      //拼团时间到触发
       if (e == 2) {
         this.is_timeup = 0
       }
@@ -904,7 +903,7 @@ export default {
       }
       //----------------------------------------------判断限时活动是否开启结束
     },
-    //商品分类 普通商品-pro  限时折扣-xs  普通拼购-pt 好友-haoyou_pt 新人拼购-new_pt
+    //商品分类 普通商品-pro  限时折扣-xs  普通拼团-pt 好友-haoyou_pt 新人拼团-new_pt
     get_pro_type (item) {
       const that = this
       if (item.discount && item.discount.discount) {
@@ -1229,14 +1228,12 @@ export default {
       this.shopping_type = 'shopping'
       this.popupShow = true
       uni.setStorageSync('is_kai', 1)
-      uni.removeStorageSync('pid')
     },
     showPopups: function (id) {
       // 别人是团长
       this.popupShow = true
       uni.setStorageSync('pid', id)
       uni.setStorageSync('is_item', 1)
-      uni.removeStorageSync('is_kai')
     },
     showPopup: function (e, is_bottom_click) {
       //直接购买

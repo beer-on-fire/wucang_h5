@@ -102,7 +102,7 @@
     <view class="yt-list"
       v-if="is_pt == 1">
       <view class="jr">
-        <view class="jr_tit">为您加入仅差1人的团，支付后即可拼购成功</view>
+        <view class="jr_tit">为您加入仅差{{pt_data.num}}人的团，支付后即可拼购成功</view>
         <view class="jr_img">
           <view class="img_01 img_01_border">
             <img :src="pt_data.c_pic"
@@ -533,9 +533,9 @@ export default {
       // this.$api.http.get('pt/get_one_item', {
       // 	id: id
       // }).then(res => {
-      orderModel.getPtOneItem(id).then(res => {
-        console.log('拼团成员：', res)
+      orderModel.getPtItem(id).then(res => {
         this.pt_data = res.data
+        console.log('拼团成员：', res.data)
         uni.removeStorageSync('pid')
       })
     },
@@ -737,19 +737,24 @@ export default {
       if (this.is_kai == 1) {
         obj.is_captain_sign = 1
         //团长下单
-        order_json = await this.$api.http.post('pt/create_pt_item', obj).then(res => (res))
-        // order_json = await orderModel.postPtCreateItem(obj).then(res => (res))
+        // order_json = await this.$api.http.post('pt/create_pt_item', obj).then(res => {
+        // 	return res
+        // })
+        order_json = await orderModel.postPtCreateItem(obj).then(res => (res))
       } else if (is_pin == 1) {
         obj.item_id = this.pid
         obj.is_captain_sign = 1
         //团员下单
-        order_json = await this.$api.http.post('pt/create_pt', obj).then(res => (res))
-        // order_json = await orderModel.postPtCreateItems(obj).then(res => (res))
+        // order_json = await this.$api.http.post('pt/create_pt', obj).then(res => {
+        // 	return res
+        // })
+        order_json = await orderModel.postPtCreateItems(obj).then(res => (res))
       } else {
         //普通下单
         order_json = await this.$api.http.post(url, obj).then(res => (res))
       }
       this.paying = true
+      console.log("创建订单成功，拿到付款信息：", order_json)
       if (!order_json.data) {
         this.$api.msg(order_json.msg)
         setTimeout(() => {
@@ -757,7 +762,7 @@ export default {
         }, 1000)
         return
       }
-      this.order_id = order_json.data || order_json
+      this.order_id = order_json.data
 
       if (this.state == 'buy') {
         uni.removeStorageSync('buy')
@@ -820,18 +825,14 @@ export default {
     },
     jsApiCall (json) {
       const that = this
-      let state = 0
       console.log("公众号支付")
       WeixinJSBridge.invoke("getBrandWCPayRequest", json, function (res) {
         WeixinJSBridge.log('a:', res.err_msg)
         if (res.err_msg == "get_brand_wcpay_request:ok") {
-          state = 2
           that.$api.msg("支付成功!")
         } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
-          state = 1
           that.$api.msg("取消支付")
         } else {
-          state = 1
           that.$api.msg("支付失败")
         }
         if (this.is_kai == 1) {
@@ -842,7 +843,7 @@ export default {
         }
         setTimeout(() => {
           uni.redirectTo({
-            url: '/pages/order/order?state=' + state
+            url: '/pages/order/order'
           })
         }, 1000)
       })

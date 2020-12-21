@@ -1,6 +1,6 @@
 <template>
   <view class="root">
-    <!-- 邀新拼购 -->
+    <!-- 邀新拼团 -->
     <view class="yxpt"
       v-if="pro_type == 'new_pt'">
       <view class="yxpt_l">
@@ -11,24 +11,24 @@
       </view>
       <view class="yxpt_r">邀请新用户参团<br />限拼购1件</view>
     </view>
-    <!-- 邀新拼购 -->
-    <!-- 一般拼购 ↓↓ -->
+    <!-- 邀新拼团 -->
+
+    <!-- 一般拼团 ↓↓ -->
     <block v-if="pro_type == 'pt'">
       <view class="tui-pro-pricebox tui-padding">
         <view class="tui-pro-price">
           <view>{{is_vip?'VIP':'¥'}}
-            <text class="tui-price">{{list.price}}</text>
+            <text class="tui-price">{{price}}</text>
           </view>
-          <!-- <tui-tag :plain="true"
-            type="high-green"
-            shape="circle">原价</tui-tag> -->
+          <!-- <tui-tag :plain="true" type="high-green" shape="circle">新品</tui-tag> -->
         </view>
 
-        <!-- <view class="tui-original-price tui-gray"
-          style="font-weight: 100;flex-grow: 1;">
-          原价
-          <text class="tui-line-through">￥{{list.price}}</text>
-        </view> -->
+        <view class="tui-original-price tui-gray"
+          style="font-weight: 100;flex-grow: 1;"
+          v-if="is_vip">
+          价格
+          <text class="tui-line-through">￥{{list.market_price}}</text>
+        </view>
       </view>
     </block>
 
@@ -49,6 +49,7 @@
       </view>
       <view class="kait"
         v-if="sys_switch.is_vip == 1">
+
         <view class="kt_01">
           <img src="@/imgs/vip.png"></img>
         </view>
@@ -57,6 +58,7 @@
         <view v-if="!my.vip"
           class="kt_03"
           @click="jump_vip">立即开通 ></view>
+
       </view>
     </block>
 
