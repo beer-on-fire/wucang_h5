@@ -13,7 +13,6 @@
             <template v-else>
               <view class="tui-amount tui-bold">￥{{price}}</view>
             </template>
-
             <view class="tui-number"><text v-if="list.sku_name">{{list.sku_name}}</text> <text>库存：{{list.stock}}</text>
             </view>
           </view>

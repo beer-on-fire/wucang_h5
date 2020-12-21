@@ -21,11 +21,11 @@
         <view class="btn"
           style="font-size: 16px;">立即提现</view>
       </view>
-      <view class="jilu">
+      <!-- <view class="jilu">
         <navigator url="/pages/user/record/record">
           <view class="jl">提现记录 ></view>
         </navigator>
-      </view>
+      </view> -->
     </view>
 
     <view class="icon">

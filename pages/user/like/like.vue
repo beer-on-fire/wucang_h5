@@ -16,8 +16,8 @@
               <view class="des_2">
                 <view class="msg">
                   <view class="name">{{item.pt?item.pt.name:''}}</view>
-                  <view class="price">￥{{item.price}}</view>
-                  <view class="int">拼购截止：{{item.pt?item.pt.end_time :''}}</view>
+                  <!-- <view class="int">{{item.int}}</view> -->
+                  <view class="price">截止：{{item.pt?item.pt.end_time :''}}</view>
                 </view>
                 <view class="btn1">
                   <view class="btn"
@@ -193,13 +193,11 @@ export default {
 }
 
 .int {
-  margin: 10px 0;
   font-size: 15px;
   color: #a8a8a8;
 }
 
 .price {
-  margin: 10px 0;
   font-size: 15px;
   color: #ff6600;
 }
